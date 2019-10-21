@@ -1,0 +1,21 @@
+{
+	"name": "hallowelt/mediawiki-lib-migration",
+	"description": "Class library for migration projects for MediaWiki",
+	"type": "library",
+	"require-dev": {
+		"phpunit/phpunit": "^6.5"
+	},
+	"license": "GPL-3.0-only",
+	"authors": [
+		{
+			"name": "Robert Vogel",
+			"email": "vogel@hallowelt.com"
+		}
+	],
+	"autoload": {
+		"psr-4": {
+			"HalloWelt\\MediaWiki\\Lib\\Migration\\": "src/",
+			"HalloWelt\\MediaWiki\\Lib\\Migration\\Tests\\": "tests/phpunit/"
+		}
+	}
+}
