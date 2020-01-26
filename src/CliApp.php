@@ -1,0 +1,13 @@
+<?php
+
+namespace HalloWelt\MediaWiki\Lib\Migration;
+
+use Symfony\Component\Console\Application;
+
+class CliApp extends Application {
+
+	public function __construct( $config ) {
+		parent::__construct( 'Migrate' );
+	}
+
+}

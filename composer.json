@@ -12,6 +12,9 @@
 			"email": "vogel@hallowelt.com"
 		}
 	],
+	"require": {
+		"symfony/console": "v3.4.9"
+	},
 	"autoload": {
 		"psr-4": {
 			"HalloWelt\\MediaWiki\\Lib\\Migration\\": "src/",
