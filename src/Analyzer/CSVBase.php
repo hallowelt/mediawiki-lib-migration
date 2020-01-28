@@ -3,7 +3,7 @@
 namespace HalloWelt\MediaWiki\Lib\Migration\Analyzer;
 
 use HalloWelt\MediaWiki\Lib\Migration\AnalyzerBase;
-use SplFileObject;
+use SplFileInfo;
 
 abstract class CSVBase extends AnalyzerBase {
 
@@ -13,7 +13,7 @@ abstract class CSVBase extends AnalyzerBase {
 	 */
 	protected $currentLineData = [];
 
-	public function doAnalyze( SplFileObject $file ): bool {
+	public function doAnalyze( SplFileInfo $file ): bool {
 		$fileHandle = fopen( $file->getPathname(), 'r' );
 		$csv = array_map('str_getcsv', file($file->getPathname()));
 		foreach( $csv as $row ) {

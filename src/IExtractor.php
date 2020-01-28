@@ -2,14 +2,14 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
-use SplFileObject;
+use SplFileInfo;
 
 interface IExtractor {
 
 	/**
 	 *
-	 * @param SplFileObject $file
+	 * @param SplFileInfo $file
 	 * @return bool
 	 */
-	public function extract( SplFileObject $file ): bool;
+	public function extract( SplFileInfo $file ): bool;
 }

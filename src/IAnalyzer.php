@@ -2,14 +2,14 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
-use SplFileObject;
+use SplFileInfo;
 
 interface IAnalyzer {
 
 	/**
 	 *
-	 * @param SplFileObject $file
+	 * @param SplFileInfo $file
 	 * @return bool
 	 */
-	public function analyze( SplFileObject $file ): bool;
+	public function analyze( SplFileInfo $file ): bool;
 }

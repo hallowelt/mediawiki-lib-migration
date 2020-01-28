@@ -6,7 +6,6 @@ use HalloWelt\MediaWiki\Lib\CommandLineTools\Commands\BatchFileProcessorBase;
 use Symfony\Component\Console\Input;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
-use SplFileObject;
 use SplFileInfo;
 use HalloWelt\MediaWiki\Lib\Migration\Workspace;
 
@@ -34,10 +33,10 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 
 	/**
 	 *
-	 * @param SplFileObject $file
+	 * @param SplFileInfo $file
 	 * @return boolean
 	 */
-	protected function processFile( SplFileObject $file ): bool {
+	protected function processFile( SplFileInfo $file ): bool {
 		//TODO: Ensure workspace dirs!?
 		return $this->doProcessFile();
 	}
@@ -46,4 +45,15 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	 * @return boolean
 	 */
 	protected abstract function doProcessFile(): bool;
+
+	/**
+	 *
+	 * @return array
+	 */
+	protected function makeExtensionWhitelist(): array {
+		if( isset( $this->config['file-extension-whitelist' ] ) ) {
+			return $this->config['file-extension-whitelist' ];
+		}
+		return [];
+	}
 }

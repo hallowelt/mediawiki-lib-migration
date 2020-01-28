@@ -4,7 +4,7 @@ namespace HalloWelt\MediaWiki\Lib\Migration;
 
 use HalloWelt\MediaWiki\Lib\Migration\IAnalyzer;
 use HalloWelt\MediaWiki\Lib\Migration\Workspace;
-use SplFileObject;
+use SplFileInfo;
 
 abstract class AnalyzerBase implements IAnalyzer {
 
@@ -28,7 +28,7 @@ abstract class AnalyzerBase implements IAnalyzer {
 
 	/**
 	 *
-	 * @var SplFileObject
+	 * @var SplFileInfo
 	 */
 	protected $currentFile = null;
 
@@ -52,10 +52,10 @@ abstract class AnalyzerBase implements IAnalyzer {
 
 	/**
 	 *
-	 * @param SplFileObject $file
+	 * @param SplFileInfo $file
 	 * @return bool
 	 */
-	public function analyze( SplFileObject $file ): bool {
+	public function analyze( SplFileInfo $file ): bool {
 		$this->currentFile = $file;
 		$this->loadAnalyzeData( $file );
 		$result = $this->doAnalyze( $file );
@@ -67,16 +67,16 @@ abstract class AnalyzerBase implements IAnalyzer {
 	}
 
 	/**
-	 * @param SplFileObject $file
+	 * @param SplFileInfo $file
 	 * @return bool
 	 */
-	protected abstract function doAnalyze ( SplFileObject $file ): bool;
+	protected abstract function doAnalyze ( SplFileInfo $file ): bool;
 
 	/**
 	 *
-	 * @param SplFileObject $file
+	 * @param SplFileInfo $file
 	 */
-	protected function loadAnalyzeData( SplFileObject $file) {
+	protected function loadAnalyzeData( SplFileInfo $file) {
 		$buckets = $this->getDataBuckets( $file );
 		foreach( $buckets as $bucketKey => $bucketWorkspaceFilename ) {
 			$this->analyzeData[$bucketKey] = $this->workspace->loadData( $bucketWorkspaceFilename );
@@ -85,22 +85,24 @@ abstract class AnalyzerBase implements IAnalyzer {
 
 	/**
 	 *
-	 * @param SplFileObject $file
+	 * @param SplFileInfo $file
 	 */
-	protected function persistAnalyzeData( SplFileObject $file ) {
+	protected function persistAnalyzeData( SplFileInfo $file ) {
 		$buckets = $this->getDataBuckets( $file );
 		foreach( $buckets as $bucketKey => $bucketWorkspaceFilename ) {
 			$this->workspace->saveData( $bucketWorkspaceFilename, $this->analyzeData[$bucketKey] );
 		}
 	}
 
-	protected function getDataBuckets( SplFileObject $file ) {
+	/**
+	 *
+	 * @param SplFileInfo $file
+	 * @return array
+	 */
+	protected function getDataBuckets( SplFileInfo $file ) {
 		return [
-			'title-metadata' => 'title-metadata',
 			'title-revisions' => 'title-revisions',
-			'title-attachments' => 'title-attachments',
-			'file-metadata' => 'file-metadata',
-			'file-sha1-map' => 'file-sha1-map',
+			'title-attachments' => 'title-attachments'
 		];
 	}
 
