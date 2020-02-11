@@ -59,4 +59,26 @@ class Workspace {
 		return $this->workspaceDir->getPathname() . "/$filename.php";
 	}
 
+	/**
+	 *
+	 * @param string $contentId
+	 * @param string $rawData
+	 *
+	 * @return string The path
+	 */
+	public function saveRawContent( $contentId, $rawData ) {
+		$this->ensurePath( 'content/raw' );
+		$filepath = "/content/raw/$contentId.mraw";
+		file_put_contents( $this->workspaceDir->getPathname().$filepath, $rawData );
+
+		return $filepath;
+	}
+
+	private function ensurePath( $subpath ) {
+		$path = $this->workspaceDir->getPathname() ."/$subpath";
+		if( !file_exists( $path ) ) {
+			mkdir($path, 0755, true );
+		}
+	}
+
 }

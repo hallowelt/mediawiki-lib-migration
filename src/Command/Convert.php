@@ -10,6 +10,15 @@ class Convert extends CliCommandBase {
 		return parent::configure();
 	}
 
+	protected function makeFileList() {
+		$this->src .= '/content/raw';
+		return parent::makeFileList();
+	}
+
+	protected function makeExtensionWhitelist() : array {
+		return [ 'mraw' ];
+	}
+
 	protected function doProcessFile(): bool {
 		return true;
 	}

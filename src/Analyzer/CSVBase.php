@@ -13,16 +13,25 @@ abstract class CSVBase extends AnalyzerBase {
 	 */
 	protected $currentLineData = [];
 
+	/**
+	 *
+	 * @var int
+	 */
+	protected $currentLineNumber = 0;
+
 	public function doAnalyze( SplFileInfo $file ): bool {
-		$fileHandle = fopen( $file->getPathname(), 'r' );
-		$csv = array_map('str_getcsv', file($file->getPathname()));
-		foreach( $csv as $row ) {
+		$lines = file( $file->getPathname() );
+		$csv = array_map('str_getcsv', $lines );
+
+		$this->currentLineNumber = 0;
+		foreach( $csv as $idx => $row ) {
+			$this->currentLineNumber = $idx;
 			$this->currentLineData = $row;
-			$this->doExtractLine();
+			$this->doAnalyzeLine();
 		}
 
 		return true;
 	}
 
-	protected abstract function doExtractLine();
+	protected abstract function doAnalyzeLine();
 }

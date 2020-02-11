@@ -2,6 +2,7 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
+use HalloWelt\MediaWiki\Lib\Migration\DataBuckets;
 use HalloWelt\MediaWiki\Lib\Migration\IAnalyzer;
 use HalloWelt\MediaWiki\Lib\Migration\Workspace;
 use SplFileInfo;
@@ -22,9 +23,9 @@ abstract class AnalyzerBase implements IAnalyzer {
 
 	/**
 	 *
-	 * @var array
+	 * @var DataBuckets
 	 */
-	protected $analyzeData = [];
+	protected $buckets = null;
 
 	/**
 	 *
@@ -39,6 +40,10 @@ abstract class AnalyzerBase implements IAnalyzer {
 	public function __construct( $config, Workspace $workspace ) {
 		$this->config = $config;
 		$this->workspace = $workspace;
+		$this->buckets = new DataBuckets( [
+			'title-revisions',
+			'title-attachments'
+		] );
 	}
 
 	/**
@@ -57,10 +62,10 @@ abstract class AnalyzerBase implements IAnalyzer {
 	 */
 	public function analyze( SplFileInfo $file ): bool {
 		$this->currentFile = $file;
-		$this->loadAnalyzeData( $file );
+		$this->loadDataBuckets( $file );
 		$result = $this->doAnalyze( $file );
 		if( $result ) {
-			$this->persistAnalyzeData( $file );
+			$this->persistDataBuckets( $file );
 		}
 
 		return $result;
@@ -76,57 +81,23 @@ abstract class AnalyzerBase implements IAnalyzer {
 	 *
 	 * @param SplFileInfo $file
 	 */
-	protected function loadAnalyzeData( SplFileInfo $file) {
-		$buckets = $this->getDataBuckets( $file );
-		foreach( $buckets as $bucketKey => $bucketWorkspaceFilename ) {
-			$this->analyzeData[$bucketKey] = $this->workspace->loadData( $bucketWorkspaceFilename );
-		}
+	protected function loadDataBuckets( SplFileInfo $file) {
+		$this->buckets->loadFromWorkspace( $this->workspace );
 	}
 
 	/**
 	 *
 	 * @param SplFileInfo $file
 	 */
-	protected function persistAnalyzeData( SplFileInfo $file ) {
-		$buckets = $this->getDataBuckets( $file );
-		foreach( $buckets as $bucketKey => $bucketWorkspaceFilename ) {
-			$this->workspace->saveData( $bucketWorkspaceFilename, $this->analyzeData[$bucketKey] );
-		}
+	protected function persistDataBuckets( SplFileInfo $file ) {
+		$this->buckets->saveToWorkspace( $this->workspace );
 	}
 
-	/**
-	 *
-	 * @param SplFileInfo $file
-	 * @return array
-	 */
-	protected function getDataBuckets( SplFileInfo $file ) {
-		return [
-			'title-revisions' => 'title-revisions',
-			'title-attachments' => 'title-attachments'
-		];
+	protected function addTitleRevision( $titleText, $contentReference = 'n/a' ) {
+		$this->buckets->addData( 'title-revisions', $titleText, $contentReference );
 	}
 
-	/**
-	 *
-	 * @param string $bucketKey
-	 * @param string|null $path
-	 * @param string|int|boolean|string[]|int[]|boolean[]|array $value
-	 */
-	protected function addData( $bucketKey, $path, $value ) {
-		if( $path === null ) {
-			$this->analyzeData[$bucketKey][] = $value;
-		}
-		else {
-			if( isset( $this->analyzeData[$bucketKey][$path] ) ) {
-				if( is_array( $this->analyzeData[$bucketKey][$path] ) === false ) {
-					$this->analyzeData[$bucketKey][$path] = [ $this->analyzeData[$bucketKey][$path] ];
-				}
-				$this->analyzeData[$bucketKey][$path][] = $value;
-			}
-			else {
-				//TODO: Implement $path resolution!
-				$this->analyzeData[$bucketKey][$path] = $value;
-			}
-		}
+	protected function addTitleAttachment( $titleText, $attachmentReference = 'n/a' ) {
+		$this->buckets->addData( 'title-attachments', $titleText, $attachmentReference );
 	}
 }
