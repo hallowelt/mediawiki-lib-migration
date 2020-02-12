@@ -36,6 +36,7 @@ abstract class AnalyzerBase implements IAnalyzer {
 	/**
 	 *
 	 * @param array $config
+	 * @param Workspace $workspace
 	 */
 	public function __construct( $config, Workspace $workspace ) {
 		$this->config = $config;

@@ -1,8 +1,17 @@
 <?php
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+namespace HalloWelt\MediaWiki\Lib\Migration\Converter;
 
+use HalloWelt\MediaWiki\Lib\Migration\ConverterBase;
+use SplFileInfo;
+
+class PandocHTML extends ConverterBase {
+
+	protected function doConvert( SplFileInfo $file ): string {
+		$path = $file->getPathname();
+		$command = "pandoc -f html -t mediawiki $file";
+		$escapedCommand = escapeshellcmd( $command );
+		$wikitext = exec( $command );
+		return $wikitext;
+	}
+}
