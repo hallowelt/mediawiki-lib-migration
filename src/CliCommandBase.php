@@ -3,9 +3,7 @@
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
 use HalloWelt\MediaWiki\Lib\CommandLineTools\Commands\BatchFileProcessorBase;
-use Symfony\Component\Console\Input;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Helper\ProgressBar;
+use HalloWelt\MediaWiki\Lib\Migration\DataBuckets;
 use SplFileInfo;
 use HalloWelt\MediaWiki\Lib\Migration\Workspace;
 
@@ -18,7 +16,16 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	 */
 	protected $config = [];
 
+	/**
+	 * @var Workspace
+	 */
 	protected $workspace = null;
+
+	/**
+	 * @var Buckets
+	 */
+	protected $buckets = null;
+
 
 	public function __construct( $config ) {
 		parent::__construct();
@@ -26,9 +33,25 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	}
 
 	protected function processFiles() {
+		$this->beforeProcessFiles();
+		$returnValue = parent::processFiles();
+		$this->afterProcessFiles();
+		return $returnValue;
+	}
+
+	protected function beforeProcessFiles() {
 		$workspaceDir = new SplFileInfo( $this->dest );
 		$this->workspace = new Workspace( $workspaceDir );
-		return parent::processFiles();
+		$this->buckets = new DataBuckets( $this->getBucketKeys() );
+		$this->buckets->loadFromWorkspace( $this->workspace );
+	}
+
+	protected function afterProcessFiles() {
+		$this->buckets->saveToWorkspace( $this->workspace );
+	}
+
+	protected function getBucketKeys() {
+		return [];
 	}
 
 	/**

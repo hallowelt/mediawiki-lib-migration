@@ -31,6 +31,9 @@ abstract class CSVBase extends ExtractorBase {
 		foreach( $csv as $idx => $row ) {
 			$this->currentLineNumber = $idx;
 			$this->currentLineData = $row;
+			if( $this->skipCurrentLine() ) {
+				continue;
+			}
 			$this->doExtractLine();
 		}
 
@@ -38,4 +41,16 @@ abstract class CSVBase extends ExtractorBase {
 	}
 
 	protected abstract function doExtractLine();
+
+	protected function skipCurrentLine() {
+		if( $this->currentLineNumber === 0 && $this->skipHeaderLine() ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	protected function skipHeaderLine() {
+		return true;
+	}
 }

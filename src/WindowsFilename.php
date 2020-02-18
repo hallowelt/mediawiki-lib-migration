@@ -2,7 +2,48 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
+use Exception;
+
 class WindowsFilename {
+
+	/**
+	 * From <mediawiki>/includes/DefaultSettings.php
+	 *
+	 * Additional characters that are not allowed in filenames. They are replaced with '-' when
+	 * uploading. Like $wgLegalTitleChars, this is a regexp character class.
+	 *
+	 * Slashes and backslashes are disallowed regardless of this setting, but included here for
+	 * completeness.
+	 */
+	protected $wgIllegalFileChars = ":\\/\\\\";
+
+	/**
+	 * From <mediawiki>/includes/DefaultSettings.php
+	 *
+	 * Allowed title characters -- regex character class
+	 * Don't change this unless you know what you're doing
+	 *
+	 * Problematic punctuation:
+	 *   -  []{}|#    Are needed for link syntax, never enable these
+	 *   -  <>        Causes problems with HTML escaping, don't use
+	 *   -  %         Enabled by default, minor problems with path to query rewrite rules, see below
+	 *   -  +         Enabled by default, but doesn't work with path to query rewrite rules,
+	 *                corrupted by apache
+	 *   -  ?         Enabled by default, but doesn't work with path to PATH_INFO rewrites
+	 *
+	 * All three of these punctuation problems can be avoided by using an alias,
+	 * instead of a rewrite rule of either variety.
+	 *
+	 * The problem with % is that when using a path to query rewrite rule, URLs are
+	 * double-unescaped: once by Apache's path conversion code, and again by PHP. So
+	 * %253F, for example, becomes "?". Our code does not double-escape to compensate
+	 * for this, indeed double escaping would break if the double-escaped title was
+	 * passed in the query string rather than the path. This is a minor security issue
+	 * because articles can be created such that they are hard to view or edit.
+	 *
+	 * In some rare cases you may wish to remove + for compatibility with old links.
+	 */
+	protected $wgLegalTitleChars = " %!\"$&'()*,\\-.\\/0-9:;=?@A-Z\\\\^_`a-z~\\x80-\\xFF+";
 
 	protected $origFilename = '';
 
@@ -73,7 +114,7 @@ class WindowsFilename {
 		//Remove all characters that don't work on  Windows FS
 		$newFilename = str_replace( array( '/', '\\', '<', '>', '?', ':', '*', '"', '|', ';', '!' ), '', $newFilename );
 		//Use MediaWiki function
-		$newFilename = wfStripIllegalFilenameChars( $newFilename );
+		$newFilename = $this->wfStripIllegalFilenameChars( $newFilename );
 
 		$newFilename = preg_replace( '#  +#', ' ', $newFilename );
 		$newFilename = str_replace( ' .','.', $newFilename ); //"Some file .pdf" => "Some file.pdf"
@@ -90,5 +131,54 @@ class WindowsFilename {
 		$newFilename = ucfirst( $newFilename );
 
 		return $newFilename;
+	}
+
+	/**
+	 * From <mediawiki>/includes/DefaultSettings.php
+	 *
+	 * Replace all invalid characters with '-'.
+	 * Additional characters can be defined in $wgIllegalFileChars (see T22489).
+	 * By default, $wgIllegalFileChars includes ':', '/', '\'.
+	 *
+	 * @param string $name Filename to process
+	 * @return string
+	 */
+	private function wfStripIllegalFilenameChars( $name ) {
+		$illegalFileChars = "|[" . $this->wgIllegalFileChars . "]";
+		$name = preg_replace(
+			"/[^" . $this->wgLegalTitleChars . "]" . $illegalFileChars . "/",
+			'-',
+			$name
+		);
+		// $wgIllegalFileChars may not include '/' and '\', so we still need to do this
+		$name = $this->wfBaseName( $name );
+		return $name;
+	}
+
+	/**
+	 * Return the final portion of a pathname.
+	 * Reimplemented because PHP5's "basename()" is buggy with multibyte text.
+	 * https://bugs.php.net/bug.php?id=33898
+	 *
+	 * PHP's basename() only considers '\' a pathchar on Windows and Netware.
+	 * We'll consider it so always, as we don't want '\s' in our Unix paths either.
+	 *
+	 * @param string $path
+	 * @param string $suffix String to remove if present
+	 * @return string
+	 */
+	private function wfBaseName( $path, $suffix = '' ) {
+		if ( $suffix == '' ) {
+			$encSuffix = '';
+		} else {
+			$encSuffix = '(?:' . preg_quote( $suffix, '#' ) . ')?';
+		}
+
+		$matches = [];
+		if ( preg_match( "#([^/\\\\]*?){$encSuffix}[/\\\\]*$#", $path, $matches ) ) {
+			return $matches[1];
+		} else {
+			return '';
+		}
 	}
 }

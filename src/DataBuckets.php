@@ -16,10 +16,10 @@ class DataBuckets {
 
 	/**
 	 *
-	 * @param string[] $initialData
+	 * @param string[] $bucketKeys
 	 */
-	public function __construct( $initialData ) {
-		foreach( $initialData as $bucketKey ) {
+	public function __construct( $bucketKeys ) {
+		foreach( $bucketKeys as $bucketKey ) {
 			$this->buckets[$bucketKey] = [];
 		}
 	}
@@ -29,12 +29,16 @@ class DataBuckets {
 	 * @param string $bucketKey
 	 * @param string|null $path
 	 * @param string|int|boolean|string[]|int[]|boolean[]|array $value
+	 * @param bool $forceArray Always create an array as value
 	 */
-	public function addData( $bucketKey, $path, $value ) {
+	public function addData( $bucketKey, $path, $value, $forceArray = true ) {
 		if( $path === null ) {
 			$this->buckets[$bucketKey][] = $value;
 		}
 		else {
+			if( $forceArray && !isset( $this->buckets[$bucketKey][$path] ) ) {
+				$this->buckets[$bucketKey][$path] = [];
+			}
 			if( isset( $this->buckets[$bucketKey][$path] ) ) {
 				if( is_array( $this->buckets[$bucketKey][$path] ) === false ) {
 					$this->buckets[$bucketKey][$path] = [ $this->buckets[$bucketKey][$path] ];

@@ -5,6 +5,7 @@ namespace HalloWelt\MediaWiki\Lib\Migration;
 use HalloWelt\MediaWiki\Lib\Migration\DataBuckets;
 use HalloWelt\MediaWiki\Lib\Migration\IAnalyzer;
 use HalloWelt\MediaWiki\Lib\Migration\Workspace;
+use HalloWelt\MediaWiki\Lib\Migration\WindowsFilename;
 use SplFileInfo;
 
 abstract class AnalyzerBase implements IAnalyzer {
@@ -37,23 +38,23 @@ abstract class AnalyzerBase implements IAnalyzer {
 	 *
 	 * @param array $config
 	 * @param Workspace $workspace
+	 * @param DataBuckets $buckets
 	 */
-	public function __construct( $config, Workspace $workspace ) {
+	public function __construct( $config, Workspace $workspace, DataBuckets $buckets ) {
 		$this->config = $config;
 		$this->workspace = $workspace;
-		$this->buckets = new DataBuckets( [
-			'title-revisions',
-			'title-attachments'
-		] );
+		$this->buckets = $buckets;
 	}
 
 	/**
 	 *
 	 * @param array $config
+	 * @param Workspace $workspace
+	 * @param DataBuckets $buckets
 	 * @return IAnalyzer
 	 */
-	public static function factory( $config, Workspace $workspaceDir ) : IAnalyzer {
-		return new static( $config, $workspaceDir );
+	public static function factory( $config, Workspace $workspaceDir, DataBuckets $buckets ) : IAnalyzer {
+		return new static( $config, $workspaceDir, $buckets );
 	}
 
 	/**
@@ -63,12 +64,7 @@ abstract class AnalyzerBase implements IAnalyzer {
 	 */
 	public function analyze( SplFileInfo $file ): bool {
 		$this->currentFile = $file;
-		$this->loadDataBuckets( $file );
 		$result = $this->doAnalyze( $file );
-		if( $result ) {
-			$this->persistDataBuckets( $file );
-		}
-
 		return $result;
 	}
 
@@ -78,27 +74,17 @@ abstract class AnalyzerBase implements IAnalyzer {
 	 */
 	protected abstract function doAnalyze ( SplFileInfo $file ): bool;
 
-	/**
-	 *
-	 * @param SplFileInfo $file
-	 */
-	protected function loadDataBuckets( SplFileInfo $file) {
-		$this->buckets->loadFromWorkspace( $this->workspace );
-	}
-
-	/**
-	 *
-	 * @param SplFileInfo $file
-	 */
-	protected function persistDataBuckets( SplFileInfo $file ) {
-		$this->buckets->saveToWorkspace( $this->workspace );
-	}
-
 	protected function addTitleRevision( $titleText, $contentReference = 'n/a' ) {
 		$this->buckets->addData( 'title-revisions', $titleText, $contentReference );
 	}
 
 	protected function addTitleAttachment( $titleText, $attachmentReference = 'n/a' ) {
 		$this->buckets->addData( 'title-attachments', $titleText, $attachmentReference );
+	}
+
+	protected function addFile( $rawFilename, $attachmentReference = 'n/a' ) {
+		$filename = ( new WindowsFilename( $rawFilename ) ) .'';
+
+		$this->buckets->addData( 'files', $filename, $attachmentReference );
 	}
 }

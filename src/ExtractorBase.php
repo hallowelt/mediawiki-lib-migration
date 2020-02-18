@@ -37,24 +37,23 @@ abstract class ExtractorBase implements IExtractor {
 	 *
 	 * @param array $config
 	 * @param Workspace $workspace
+	 * @param DataBuckets $buckets
 	 */
-	public function __construct( $config, Workspace $workspace ) {
+	public function __construct( $config, Workspace $workspace, DataBuckets $buckets ) {
 		$this->config = $config;
 		$this->workspace = $workspace;
-		$this->buckets = new DataBuckets( [
-			'revision-contents',
-			'title-metadata'
-		] );
+		$this->buckets = $buckets;
 	}
 
 	/**
 	 *
 	 * @param array $config
 	 * @param Workspace $workspace
+	 * @param DataBuckets $buckets
 	 * @return IExtractor
 	 */
-	public static function factory( $config, Workspace $workspace ) : IExtractor {
-		return new static( $config, $workspace );
+	public static function factory( $config, Workspace $workspace, DataBuckets $buckets ) : IExtractor {
+		return new static( $config, $workspace, $buckets );
 	}
 
 	/**
@@ -64,12 +63,7 @@ abstract class ExtractorBase implements IExtractor {
 	 */
 	public function extract( SplFileInfo $file ): bool {
 		$this->currentFile = $file;
-		$this->loadDataBuckets( $file );
 		$result = $this->doExtract( $file );
-		if( $result ) {
-			$this->persistDataBuckets( $file );
-		}
-
 		return $result;
 	}
 
@@ -78,22 +72,6 @@ abstract class ExtractorBase implements IExtractor {
 	 * @return bool
 	 */
 	protected abstract function doExtract( SplFileInfo $file ): bool;
-
-	/**
-	 *
-	 * @param SplFileInfo $file
-	 */
-	protected function loadDataBuckets( SplFileInfo $file) {
-		$this->buckets->loadFromWorkspace( $this->workspace );
-	}
-
-	/**
-	 *
-	 * @param SplFileInfo $file
-	 */
-	protected function persistDataBuckets( SplFileInfo $file ) {
-		$this->buckets->saveToWorkspace( $this->workspace );
-	}
 
 	/**
 	 *
@@ -110,6 +88,6 @@ abstract class ExtractorBase implements IExtractor {
 	 * @param string $meta
 	 */
 	protected function addTitleMetaData( $titleText, $meta = [] ) {
-		$this->buckets->addData( 'title-metadata', $titleText, $meta );
+		$this->buckets->addData( 'title-metadata', $titleText, $meta, false );
 	}
 }

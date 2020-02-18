@@ -59,7 +59,7 @@ class Convert extends CliCommandBase {
 
 	private function ensureTargetPath() {
 		$baseTargetPath = dirname( $this->targetPathname );
-		if( !file_exists(  $baseTargetPath ) ) {
+		if( !file_exists( $baseTargetPath ) ) {
 			mkdir( $baseTargetPath, 0755, true );
 		}
 	}
