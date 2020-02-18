@@ -6,6 +6,7 @@ use HalloWelt\MediaWiki\Lib\CommandLineTools\Commands\BatchFileProcessorBase;
 use HalloWelt\MediaWiki\Lib\Migration\DataBuckets;
 use SplFileInfo;
 use HalloWelt\MediaWiki\Lib\Migration\Workspace;
+use HalloWelt\MediaWiki\Lib\Migration\IFileProcessorEventHandler;
 
 
 abstract class CliCommandBase extends BatchFileProcessorBase {
@@ -26,6 +27,11 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	 */
 	protected $buckets = null;
 
+	/**
+	 *
+	 * @var IFileProcessorEventHandler
+	 */
+	protected $eventhandlers = [];
 
 	public function __construct( $config ) {
 		parent::__construct();
@@ -34,7 +40,9 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 
 	protected function processFiles() {
 		$this->beforeProcessFiles();
+		$this->runBeforeProcessFilesEventHandlers();
 		$returnValue = parent::processFiles();
+		$this->runAfterProcessFilesEventHandlers();
 		$this->afterProcessFiles();
 		return $returnValue;
 	}
@@ -52,6 +60,18 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 
 	protected function getBucketKeys() {
 		return [];
+	}
+
+	protected function runBeforeProcessFilesEventHandlers() {
+		foreach( $this->eventhandlers as $handler ) {
+			$handler->beforeProcessFiles( new SplFileInfo( $this->src ) );
+		}
+	}
+
+	protected function runAfterProcessFilesEventHandlers() {
+		foreach( $this->eventhandlers as $handler ) {
+			$handler->afterProcessFiles( new SplFileInfo( $this->src ) );
+		}
 	}
 
 	/**

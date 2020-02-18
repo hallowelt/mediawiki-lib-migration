@@ -6,8 +6,16 @@ use HalloWelt\MediaWiki\Lib\Migration\CliCommandBase;
 use HalloWelt\MediaWiki\Lib\Migration\IExtractor;
 use HalloWelt\MediaWiki\Lib\Migration\DataBuckets;
 use Exception;
+use HalloWelt\MediaWiki\Lib\Migration\IFileProcessorEventHandler;
 
 class Extract extends CliCommandBase {
+
+	/**
+	 *
+	 * @var IExtractor[]
+	 */
+	protected $extractors = [];
+
 	protected function configure() {
 		$this->setName( 'extract' );
 		return parent::configure();
@@ -15,6 +23,15 @@ class Extract extends CliCommandBase {
 
 	protected function getBucketKeys() {
 		return [
+			//From the "analyze" step
+			'files',
+			'filename-collisions',
+			'title-attachments',
+			'title-collisions',
+			'title-invalids',
+			'title-revisions',
+
+			//From this step
 			'revision-contents',
 			'title-metadata',
 			'file-merges',
@@ -26,9 +43,7 @@ class Extract extends CliCommandBase {
 		parent::beforeProcessFiles();
 		//Explicitly reset the persisted data
 		$this->buckets = new DataBuckets( $this->getBucketKeys() );
-	}
 
-	protected function doProcessFile(): bool {
 		$extractorFactoryCallbacks = $this->config['extractors'];
 		foreach( $extractorFactoryCallbacks as $key => $callback ) {
 			$extractor = call_user_func_array(
@@ -41,6 +56,15 @@ class Extract extends CliCommandBase {
 					. "IExtractor object"
 				);
 			}
+			$this->extractors[$key] = $extractor;
+			if( $extractor instanceof IFileProcessorEventHandler ) {
+				$this->eventhandlers[$key] = $extractor;
+			}
+		}
+	}
+
+	protected function doProcessFile(): bool {
+		foreach( $this->extractors as $key => $extractor ) {
 			$result = $extractor->extract( $this->currentFile );
 			//TODO: Evaluate result
 		}

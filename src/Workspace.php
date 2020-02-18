@@ -42,7 +42,7 @@ class Workspace {
 	 */
 	public function saveData( $filename, $data ): bool {
 		$formattedData = var_export( $data, true );
-		$fileContent = "<?php\nreturn $formattedData;";
+		$fileContent = "<?php\n\nreturn $formattedData;";
 
 		$filepathname = $this->makeFilepathname( $filename );
 		$result = file_put_contents( $filepathname, $fileContent );
@@ -81,4 +81,17 @@ class Workspace {
 		}
 	}
 
+	/**
+	 *
+	 * @param string $targetFileName
+	 * @param string $content
+	 * @return string The path
+	 */
+	protected function saveUploadFile( $targetFileName, $content ) {
+		$this->ensurePath( 'result/images' );
+		$filepath = "/result/images/$targetFileName";
+		file_put_contents( $this->workspaceDir->getPathname().$filepath, $content );
+
+		return $filepath;
+	}
 }

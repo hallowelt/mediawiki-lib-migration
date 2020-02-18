@@ -134,7 +134,7 @@ class WindowsFilename {
 	}
 
 	/**
-	 * From <mediawiki>/includes/DefaultSettings.php
+	 * From <mediawiki>/includes/GlobalFunctions.php
 	 *
 	 * Replace all invalid characters with '-'.
 	 * Additional characters can be defined in $wgIllegalFileChars (see T22489).
@@ -156,6 +156,8 @@ class WindowsFilename {
 	}
 
 	/**
+	 * From <mediawiki>/includes/GlobalFunctions.php
+	 *
 	 * Return the final portion of a pathname.
 	 * Reimplemented because PHP5's "basename()" is buggy with multibyte text.
 	 * https://bugs.php.net/bug.php?id=33898

@@ -4,6 +4,7 @@ namespace HalloWelt\MediaWiki\Lib\Migration\Command;
 
 use HalloWelt\MediaWiki\Lib\Migration\CliCommandBase;
 use HalloWelt\MediaWiki\Lib\Migration\IConverter;
+use Exception;
 
 class Convert extends CliCommandBase {
 
@@ -36,10 +37,14 @@ class Convert extends CliCommandBase {
 		$this->ensureTargetPath();
 
 		foreach( $converterFactoryCallbacks as $key => $callback ) {
-			$converter = call_user_func_array( $callback, [ $this->config, $this->workspace ] );
+			$converter = call_user_func_array(
+				$callback,
+				[ $this->config, $this->workspace ]
+			);
 			if( $converter instanceof IConverter === false ) {
 				throw new Exception(
-					"Factory callback for converter '$key' did not return an IConverter object"
+					"Factory callback for converter '$key' did not return an "
+					. "IConverter object"
 				);
 			}
 			$result = $converter->convert( $this->currentFile );
