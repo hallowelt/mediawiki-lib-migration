@@ -2,12 +2,13 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
+use HalloWelt\MediaWiki\Lib\MediaWikiXML\Builder;
+
 interface IComposer {
 
 	/**
 	 *
-	 * @param string $pagename
-	 * @return string[]
+	 * @param Builder $builder
 	 */
-	public function composeRevisionTexts( string $pagename ) : array;
+	public function buildXML( Builder $builder );
 }

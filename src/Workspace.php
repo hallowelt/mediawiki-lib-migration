@@ -83,6 +83,19 @@ class Workspace {
 
 	/**
 	 *
+	 * @param string $contentId
+	 *
+	 * @return string The wikitext content as created by step "convert"
+	 */
+	public function getConvertedContent( $contentId ) {
+		$filepath = "/content/wikitext/$contentId.wiki";
+		$content = file_get_contents( $this->workspaceDir->getPathname() . $filepath );
+
+		return $content;
+	}
+
+	/**
+	 *
 	 * @param string $targetFileName
 	 * @param string $content
 	 * @return string The path

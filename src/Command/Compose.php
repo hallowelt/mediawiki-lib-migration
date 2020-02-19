@@ -7,6 +7,8 @@ use HalloWelt\MediaWiki\Lib\Migration\CliCommandBase;
 use HalloWelt\MediaWiki\Lib\Migration\DataBuckets;
 use HalloWelt\MediaWiki\Lib\Migration\Workspace;
 use SplFileInfo;
+use Exception;
+use HalloWelt\MediaWiki\Lib\Migration\IComposer;
 
 class Compose extends CliCommandBase {
 	protected function configure() {
@@ -20,15 +22,45 @@ class Compose extends CliCommandBase {
 
 	protected function processFiles() {
 		$this->ensureTargetDirs();
-		$workspace = new Workspace( new SplFileInfo( $this->src ) );
-		$buckets = new DataBuckets( [
+		$this->workspace = new Workspace( new SplFileInfo( $this->src ) );
+		$this->buckets = new DataBuckets( [
+			'files',
 			'revision-contents',
 			'title-attachments',
 			'title-metadata',
 			'title-revisions',
 		] );
-		$buckets->loadFromWorkspace( $workspace );
+		$this->buckets->loadFromWorkspace( $this->workspace );
+		$composers = $this->makeComposers();
 		$mediawikixmlbuilder = new Builder();
+		foreach( $composers as $composer ) {
+			$composer->buildXML( $mediawikixmlbuilder );
+		}
+		$mediawikixmlbuilder->buildAndSave( $this->dest . '/result/output.xml' );
+	}
+
+	/**
+	 *
+	 * @return IComposer[]
+	 */
+	protected function makeComposers() {
+		$composers = [];
+		$composerCallbacks = $this->config['composers'];
+		foreach( $composerCallbacks as $key => $callback ) {
+			$composer = call_user_func_array(
+				$callback,
+				[ $this->config, $this->workspace, $this->buckets ]
+			);
+			if( $composer instanceof IComposer === false ) {
+				throw new Exception(
+					"Factory callback for analyzer '$key' did not return an "
+					. "IComposer object"
+				);
+			}
+			$composers[] = $composer;
+		}
+
+		return $composers;
 	}
 
 	protected function doProcessFile() : bool {
