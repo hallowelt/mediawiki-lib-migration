@@ -29,6 +29,12 @@ abstract class ExtractorBase implements IExtractor {
 
 	/**
 	 *
+	 * @var DataBuckets
+	 */
+	protected $analyzeBuckets = null;
+
+	/**
+	 *
 	 * @var SplFileInfo
 	 */
 	protected $currentFile = null;
@@ -43,6 +49,15 @@ abstract class ExtractorBase implements IExtractor {
 		$this->config = $config;
 		$this->workspace = $workspace;
 		$this->buckets = $buckets;
+		$this->analyzeBuckets = new DataBuckets( [
+			'files',
+			'filename-collisions',
+			'title-attachments',
+			'title-collisions',
+			'title-invalids',
+			'title-revisions'
+		] );
+		$this->analyzeBuckets->loadFromWorkspace( $workspace );
 	}
 
 	/**

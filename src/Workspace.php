@@ -87,7 +87,7 @@ class Workspace {
 	 * @param string $content
 	 * @return string The path
 	 */
-	protected function saveUploadFile( $targetFileName, $content ) {
+	public function saveUploadFile( $targetFileName, $content ) {
 		$this->ensurePath( 'result/images' );
 		$filepath = "/result/images/$targetFileName";
 		file_put_contents( $this->workspaceDir->getPathname().$filepath, $content );

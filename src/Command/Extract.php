@@ -23,14 +23,6 @@ class Extract extends CliCommandBase {
 
 	protected function getBucketKeys() {
 		return [
-			//From the "analyze" step
-			'files',
-			'filename-collisions',
-			'title-attachments',
-			'title-collisions',
-			'title-invalids',
-			'title-revisions',
-
 			//From this step
 			'revision-contents',
 			'title-metadata',

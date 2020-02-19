@@ -83,8 +83,42 @@ abstract class AnalyzerBase implements IAnalyzer {
 	}
 
 	protected function addFile( $rawFilename, $attachmentReference = 'n/a' ) {
-		$filename = ( new WindowsFilename( $rawFilename ) ) .'';
+		$filename = $this->getFilename( $rawFilename, $attachmentReference );
+		$filename = ( new WindowsFilename( $filename ) ) .'';
 
 		$this->buckets->addData( 'files', $filename, $attachmentReference );
+	}
+
+	protected $rawFilenameReferenceMap = [];
+
+	protected function getFilename( $rawFilename, $attachmentReference ) {
+		if( isset( $this->rawFilenameReferenceMap[$rawFilename] ) ) {
+			if( $this->rawFilenameReferenceMap[$rawFilename] !== $attachmentReference ) {
+				$rawFilename = $this->uncollideFilename( $rawFilename, $attachmentReference );
+			}
+		}
+
+		$this->rawFilenameReferenceMap[$rawFilename] = $attachmentReference;
+		return $rawFilename;
+	}
+
+	protected function uncollideFilename( $rawFilename, $attachmentReference ) {
+		$parts = explode( '.', $rawFilename );
+		$fileExt = array_pop( $parts );
+		$plainFilename = implode( '.', $parts );
+		$count = 0;
+		foreach( $this->rawFilenameReferenceMap as $filename => $attachmentRef ) {
+			if( strpos( $filename, $plainFilename ) === 0 ) {
+				if( $attachmentReference !== $attachmentRef ) {
+					$count++;
+				}
+			}
+		}
+		$suffix = '';
+		if( $count > 0 ) {
+			$suffix = $count;
+		}
+
+		return $plainFilename.$suffix.'.'.$fileExt;
 	}
 }
