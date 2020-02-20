@@ -86,7 +86,13 @@ abstract class AnalyzerBase implements IAnalyzer {
 		$filename = $this->getFilename( $rawFilename, $attachmentReference );
 		$filename = ( new WindowsFilename( $filename ) ) .'';
 
-		$this->buckets->addData( 'files', $filename, $attachmentReference );
+		$prefixedFilename = $this->maybePrefixFilename( $filename );
+
+		$this->buckets->addData( 'files', $prefixedFilename, $attachmentReference );
+	}
+
+	protected function maybePrefixFilename( $filename ) {
+		return $filename;
 	}
 
 	protected $rawFilenameReferenceMap = [];

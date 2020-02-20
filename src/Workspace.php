@@ -101,8 +101,8 @@ class Workspace {
 	 * @return string The path
 	 */
 	public function saveUploadFile( $targetFileName, $content ) {
-		$this->ensurePath( 'result/images' );
 		$filepath = "/result/images/$targetFileName";
+		$this->ensurePath( dirname( $filepath ) );
 		file_put_contents( $this->workspaceDir->getPathname().$filepath, $content );
 
 		return $filepath;
