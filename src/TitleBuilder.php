@@ -42,39 +42,7 @@ class TitleBuilder {
 	 * For migration purposes we always rely on the "canonical" (englisch) namespace prefixes.
 	 * array
 	 */
-	private $namespaceMap = [
-		static::NS_MEDIA => 'Media',
-		static::NS_SPECIAL => 'Special',
-
-		static::NS_MAIN => '',
-		static::NS_TALK => 'Talk',
-		static::NS_USER => 'User',
-		static::NS_USER_TALK => 'User_talk',
-		static::NS_PROJECT => 'Project',
-		static::NS_PROJECT_TALK_TALK => 'Project_talk',
-		static::NS_FILE => 'File',
-		static::NS_FILE_TALK => 'File_talk',
-		static::NS_MEDIAWIKI => 'MediaWiki',
-		static::NS_MEDIAWIKI_TALK => 'MediaWiki_talk',
-		static::NS_TEMPLATE => 'Template',
-		static::NS_TEMPLATE_TALK => 'Template_talk',
-		static::NS_HELP => 'Help',
-		static::NS_HELP_TALK => 'Help_talk',
-		static::NS_CATEGORY => 'Category',
-		static::NS_CATEGORY_TALK => 'Category_talk',
-
-		static::NS_FORM => 'Form',
-		static::NS_FORM_TALK => 'Form_talk',
-
-		static::NS_PROPERTY => 'Property',
-		static::NS_USR_TALK => 'Property_talk',
-
-		static::NS_MODULE => 'Module',
-		static::NS_MODULE_TALK => 'Module_talk',
-
-		static::NS_BOOK => 'Book',
-		static::NS_BOOK_TALK => 'Book_talk'
-	];
+	private $namespaceMap = [];
 
 	/**
 	 * @var string
@@ -83,37 +51,92 @@ class TitleBuilder {
 
 	/**
 	 *
-	 * @var string
+	 * @var string[]
 	 */
 	private $titleSegments = [];
 
+	/**
+	 *
+	 * @param array $namespaceMap
+	 */
 	public function __constructor( array $namespaceMap ) {
+		$this->namespaceMap = [
+			static::NS_MEDIA => 'Media',
+			static::NS_SPECIAL => 'Special',
+
+			static::NS_MAIN => '',
+			static::NS_TALK => 'Talk',
+			static::NS_USER => 'User',
+			static::NS_USER_TALK => 'User_talk',
+			static::NS_PROJECT => 'Project',
+			static::NS_PROJECT_TALK => 'Project_talk',
+			static::NS_FILE => 'File',
+			static::NS_FILE_TALK => 'File_talk',
+			static::NS_MEDIAWIKI => 'MediaWiki',
+			static::NS_MEDIAWIKI_TALK => 'MediaWiki_talk',
+			static::NS_TEMPLATE => 'Template',
+			static::NS_TEMPLATE_TALK => 'Template_talk',
+			static::NS_HELP => 'Help',
+			static::NS_HELP_TALK => 'Help_talk',
+			static::NS_CATEGORY => 'Category',
+			static::NS_CATEGORY_TALK => 'Category_talk',
+
+			static::NS_FORM => 'Form',
+			static::NS_FORM_TALK => 'Form_talk',
+
+			static::NS_PROPERTY => 'Property',
+			static::NS_PROPERTY_TALK => 'Property_talk',
+
+			static::NS_MODULE => 'Module',
+			static::NS_MODULE_TALK => 'Module_talk',
+
+			static::NS_BOOK => 'Book',
+			static::NS_BOOK_TALK => 'Book_talk'
+		];
+
 		$this->namespaceMap = array_merge( $this->namespaceMap, $namespaceMap );
 	}
 
+	/**
+	 *
+	 * @param integer $namespaceId
+	 * @return TitleBuilder
+	 */
 	public function setNamespace( int $namespaceId ) : TitleBuilder {
 		if( !isset( $this->namespaceMap[$namespaceId] ) ) {
-			throw new Exception( "No prefix set for `$namespaceId`!" );
+			#throw new Exception( "No prefix set for `$namespaceId`!" );
 		}
 		$this->namespacePrefix = $this->namespaceMap[$namespaceId];
 		return $this;
 	}
 
+	/**
+	 *
+	 * @param [type] $segment
+	 * @return TitleBuilder
+	 */
 	public function appendTitleSegment( $segment ) : TitleBuilder {
 		$cleanedSegment = $this->cleanTitleSegment( $segment );
 		if( empty( $cleanedSegment ) ) {
 			return $this;
-			#throw new Exception( "Cleaned version of `$segment` is empty!" );
 		}
 		$this->titleSegments[] = $cleanedSegment;
 		return $this;
 	}
 
+	/**
+	 *
+	 * @return TitleBuilder
+	 */
 	public function reduceTitleSegments() : TitleBuilder {
 		$this->titleSegments = array_unique( array_values( $this->titleSegments ) );
 		return $this;
 	}
 
+	/**
+	 *
+	 * @return TitleBuilder
+	 */
 	public function invertTitleSegments() : TitleBuilder {
 		$this->titleSegments = array_reverse( $this->titleSegments );
 		return $this;
@@ -140,6 +163,11 @@ class TitleBuilder {
 		return $prefix.$titleText;
 	}
 
+	/**
+	 *
+	 * @param string $segment
+	 * @return string
+	 */
 	private function cleanTitleSegment( $segment ) {
 		$segment = str_replace( ' ', '_', $segment );
 		$segment = preg_replace( static::getTitleInvalidRegex(), '_',  $segment );
