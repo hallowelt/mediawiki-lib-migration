@@ -59,7 +59,7 @@ class TitleBuilder {
 	 *
 	 * @param array $namespaceMap
 	 */
-	public function __constructor( array $namespaceMap ) {
+	public function __construct( array $namespaceMap ) {
 		$this->namespaceMap = [
 			static::NS_MEDIA => 'Media',
 			static::NS_SPECIAL => 'Special',
@@ -94,7 +94,7 @@ class TitleBuilder {
 			static::NS_BOOK_TALK => 'Book_talk'
 		];
 
-		$this->namespaceMap = array_merge( $this->namespaceMap, $namespaceMap );
+		$this->namespaceMap = $this->namespaceMap + $namespaceMap;
 	}
 
 	/**
@@ -103,10 +103,11 @@ class TitleBuilder {
 	 * @return TitleBuilder
 	 */
 	public function setNamespace( int $namespaceId ) : TitleBuilder {
-		if( !isset( $this->namespaceMap[$namespaceId] ) ) {
-			#throw new Exception( "No prefix set for `$namespaceId`!" );
+		$this->namespacePrefix = (string)$namespaceId;
+		if( isset( $this->namespaceMap[$namespaceId] ) ) {
+			$this->namespacePrefix = $this->namespaceMap[$namespaceId];
 		}
-		$this->namespacePrefix = $this->namespaceMap[$namespaceId];
+
 		return $this;
 	}
 
