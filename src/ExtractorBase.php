@@ -83,7 +83,7 @@ abstract class ExtractorBase implements IExtractor {
 	}
 
 	/**
-	 * @param SplFileInfor $file
+	 * @param SplFileInfo $file
 	 * @return bool
 	 */
 	protected abstract function doExtract( SplFileInfo $file ): bool;
