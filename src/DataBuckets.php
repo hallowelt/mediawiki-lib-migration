@@ -30,8 +30,9 @@ class DataBuckets {
 	 * @param string|null $path
 	 * @param string|int|boolean|string[]|int[]|boolean[]|array $value
 	 * @param bool $forceArray Always create an array as value
+	 * @param bool $addUnique Force unique values in te resulting array
 	 */
-	public function addData( $bucketKey, $path, $value, $forceArray = true ) {
+	public function addData( $bucketKey, $path, $value, $forceArray = true, $addUnique = false ) {
 		if( $path === null ) {
 			$this->buckets[$bucketKey][] = $value;
 		}
@@ -44,6 +45,9 @@ class DataBuckets {
 					$this->buckets[$bucketKey][$path] = [ $this->buckets[$bucketKey][$path] ];
 				}
 				$this->buckets[$bucketKey][$path][] = $value;
+				if( $addUnique ) {
+					$this->buckets[$bucketKey][$path] = array_unique( $this->buckets[$bucketKey][$path] );
+				}
 			}
 			else {
 				//TODO: Implement $path resolution!
