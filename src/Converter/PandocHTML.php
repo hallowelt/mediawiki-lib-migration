@@ -9,9 +9,9 @@ class PandocHTML extends ConverterBase {
 
 	protected function doConvert( SplFileInfo $file ): string {
 		$path = $file->getPathname();
-		$command = "pandoc -f html -t mediawiki $file";
+		$command = "pandoc -f html -t mediawiki $path";
 		$escapedCommand = escapeshellcmd( $command );
-		$wikitext = exec( $command );
+		$wikitext = exec( $escapedCommand );
 		return $wikitext;
 	}
 }

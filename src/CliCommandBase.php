@@ -23,7 +23,7 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	protected $workspace = null;
 
 	/**
-	 * @var Buckets
+	 * @var DataBuckets
 	 */
 	protected $buckets = null;
 
