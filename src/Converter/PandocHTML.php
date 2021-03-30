@@ -11,7 +11,11 @@ class PandocHTML extends ConverterBase {
 		$path = $file->getPathname();
 		$command = "pandoc -f html -t mediawiki $path";
 		$escapedCommand = escapeshellcmd( $command );
-		$wikitext = exec( $escapedCommand );
+		$result = [];
+		exec( $escapedCommand, $result );
+
+		$wikitext = implode("\n", $result);
+
 		return $wikitext;
 	}
 }
