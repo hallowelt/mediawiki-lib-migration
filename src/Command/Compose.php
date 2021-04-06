@@ -9,6 +9,7 @@ use HalloWelt\MediaWiki\Lib\Migration\Workspace;
 use SplFileInfo;
 use Exception;
 use HalloWelt\MediaWiki\Lib\Migration\IComposer;
+use HalloWelt\MediaWiki\Lib\Migration\IOutputAwareInterface;
 
 class Compose extends CliCommandBase {
 	protected function configure() {
@@ -56,6 +57,9 @@ class Compose extends CliCommandBase {
 					"Factory callback for analyzer '$key' did not return an "
 					. "IComposer object"
 				);
+			}
+			if( $composer instanceof IOutputAwareInterface ) {
+				$composer->setOutput( $this->output );
 			}
 			$composers[] = $composer;
 		}

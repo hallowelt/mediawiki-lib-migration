@@ -5,6 +5,7 @@ namespace HalloWelt\MediaWiki\Lib\Migration\Command;
 use HalloWelt\MediaWiki\Lib\Migration\CliCommandBase;
 use HalloWelt\MediaWiki\Lib\Migration\IConverter;
 use Exception;
+use HalloWelt\MediaWiki\Lib\Migration\IOutputAwareInterface;
 
 class Convert extends CliCommandBase {
 
@@ -46,6 +47,9 @@ class Convert extends CliCommandBase {
 					"Factory callback for converter '$key' did not return an "
 					. "IConverter object"
 				);
+			}
+			if( $converter instanceof IOutputAwareInterface ) {
+				$converter->setOutput( $this->output );
 			}
 			$result = $converter->convert( $this->currentFile );
 			file_put_contents( $this->targetPathname, $result );

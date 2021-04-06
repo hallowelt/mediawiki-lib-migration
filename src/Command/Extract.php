@@ -7,6 +7,7 @@ use HalloWelt\MediaWiki\Lib\Migration\IExtractor;
 use HalloWelt\MediaWiki\Lib\Migration\DataBuckets;
 use Exception;
 use HalloWelt\MediaWiki\Lib\Migration\IFileProcessorEventHandler;
+use HalloWelt\MediaWiki\Lib\Migration\IOutputAwareInterface;
 
 class Extract extends CliCommandBase {
 
@@ -47,6 +48,9 @@ class Extract extends CliCommandBase {
 					"Factory callback for extractor '$key' did not return an "
 					. "IExtractor object"
 				);
+			}
+			if( $extractor instanceof IOutputAwareInterface ) {
+				$extractor->setOutput( $this->output );
 			}
 			$this->extractors[$key] = $extractor;
 			if( $extractor instanceof IFileProcessorEventHandler ) {

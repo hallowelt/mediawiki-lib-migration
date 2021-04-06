@@ -6,6 +6,7 @@ use HalloWelt\MediaWiki\Lib\Migration\DataBuckets;
 use HalloWelt\MediaWiki\Lib\Migration\CliCommandBase;
 use HalloWelt\MediaWiki\Lib\Migration\IAnalyzer;
 use Exception;
+use HalloWelt\MediaWiki\Lib\Migration\IOutputAwareInterface;
 
 class Analyze extends CliCommandBase {
 	protected function configure() {
@@ -42,6 +43,9 @@ class Analyze extends CliCommandBase {
 					"Factory callback for analyzer '$key' did not return an "
 					. "IAnalyzer object"
 				);
+			}
+			if( $analyzer instanceof IOutputAwareInterface ) {
+				$analyzer->setOutput( $this->output );
 			}
 			$result = $analyzer->analyze( $this->currentFile );
 			//TODO: Evaluate result
