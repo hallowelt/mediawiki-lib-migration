@@ -83,8 +83,13 @@ abstract class AnalyzerBase implements IAnalyzer {
 	}
 
 	protected function addFile( $rawFilename, $attachmentReference = 'n/a' ) {
-		$filename = $this->getFilename( $rawFilename, $attachmentReference );
-		$filename = ( new WindowsFilename( $filename ) ) .'';
+		try {
+			$filename = $this->getFilename( $rawFilename, $attachmentReference );
+			$filename = ( new WindowsFilename( $filename ) ) .'';
+		} catch ( InvalidTitleException $ex ) {
+			$this->logger->error( $ex->getMessage() );
+			return;
+		}
 
 		$prefixedFilename = $this->maybePrefixFilename( $filename );
 

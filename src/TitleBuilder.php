@@ -2,7 +2,7 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
-use Exception;
+use HalloWelt\MediaWiki\Lib\Migration\InvalidTitleException;
 
 class TitleBuilder {
 
@@ -145,7 +145,7 @@ class TitleBuilder {
 
 	/**
 	 * @return string
-	 * @throws Exception
+	 * @throws InvalidTitleException
 	 */
 	public function build() : string {
 		$prefix = '';
@@ -153,14 +153,15 @@ class TitleBuilder {
 			$prefix = $this->namespacePrefix . ':';
 		}
 		if( empty( $this->titleSegments ) ) {
-			throw new Exception( "No title segments set" );
+			throw new InvalidTitleException( '', "No title segments set" );
 		}
 
 		$titleText = implode( '/', $this->titleSegments );
 		$titleText = trim( $titleText, " \t\n\r\0\x0B/" );
 
 		if( mb_strlen( $titleText ) > 255 ) {
-			throw new Exception(
+			throw new InvalidTitleException(
+				$titleText,
 				"Title '$titleText' exceeds maximum length of 255 chars!"
 			);
 		}

@@ -2,7 +2,7 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
-use Exception;
+use HalloWelt\MediaWiki\Lib\Migration\InvalidTitleException;
 
 class WindowsFilename {
 
@@ -125,7 +125,10 @@ class WindowsFilename {
 		$newFilename = preg_replace( '#_+#', '_', $newFilename );
 
 		if( mb_strlen( $newFilename ) > 255 ) {
-			throw new Exception( "Filename '$newFilename' exceeds maximum length of 255 characters!" );
+			throw new InvalidTitleException(
+				$newFilename,
+				"Filename '$newFilename' exceeds maximum length of 255 characters!"
+			);
 		}
 
 		$newFilename = ucfirst( $newFilename );
