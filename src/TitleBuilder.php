@@ -143,6 +143,10 @@ class TitleBuilder {
 		return $this;
 	}
 
+	/**
+	 * @return string
+	 * @throws Exception
+	 */
 	public function build() : string {
 		$prefix = '';
 		if( !empty( $this->namespacePrefix ) ) {
