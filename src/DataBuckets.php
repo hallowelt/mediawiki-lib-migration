@@ -4,6 +4,11 @@ namespace HalloWelt\MediaWiki\Lib\Migration;
 
 use HalloWelt\MediaWiki\Lib\Migration\Workspace;
 
+/**
+ * Presents key-value file storage
+ *
+ * @package HalloWelt\MediaWiki\Lib\Migration
+ */
 class DataBuckets {
 
 
@@ -25,7 +30,18 @@ class DataBuckets {
 	}
 
 	/**
-	 *
+	 * Adds data to data bucket.
+	 * There are several cases to use it:
+	 * * In case if data bucket already has data:<br/>
+	 * <var>$forceArray</var> is set to <tt>false</tt> - data will be replaced.<br/>
+	 * <var>$addUnique</var> will not be used in that case.<br/>
+	 * If <var>$forceArray</var> is set to <tt>true</tt>, then old data will be wrapped into array
+	 *     (if it is not array yet). Afterwards new data will be added to the array.<br/>
+	 * ALso If <var>$addUnique</var> is set to <tt>true</tt> - duplicates will be removed from array.
+	 * * In case if data bucket has no data yet:<br/>
+	 * <var>$forceArray</var> is set to <tt>true</tt> - data will be wrapped into array<br/>
+	 * <var>$forceArray</var> is set to <tt>false</tt> - data will be stored as single value
+	 * 
 	 * @param string $bucketKey
 	 * @param string|null $path
 	 * @param string|int|boolean|string[]|int[]|boolean[]|array $value
@@ -41,12 +57,17 @@ class DataBuckets {
 				$this->buckets[$bucketKey][$path] = [];
 			}
 			if( isset( $this->buckets[$bucketKey][$path] ) ) {
-				if( is_array( $this->buckets[$bucketKey][$path] ) === false ) {
-					$this->buckets[$bucketKey][$path] = [ $this->buckets[$bucketKey][$path] ];
+				if( !$forceArray ) {
+					$this->buckets[$bucketKey][$path] = $value;
 				}
-				$this->buckets[$bucketKey][$path][] = $value;
-				if( $addUnique ) {
-					$this->buckets[$bucketKey][$path] = array_unique( $this->buckets[$bucketKey][$path] );
+				else {
+					if( is_array( $this->buckets[$bucketKey][$path] ) === false ) {
+						$this->buckets[$bucketKey][$path] = [ $this->buckets[$bucketKey][$path] ];
+					}
+					$this->buckets[$bucketKey][$path][] = $value;
+					if( $addUnique ) {
+						$this->buckets[$bucketKey][$path] = array_unique( $this->buckets[$bucketKey][$path] );
+					}
 				}
 			}
 			else {
