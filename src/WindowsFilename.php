@@ -95,7 +95,7 @@ class WindowsFilename {
 
 	/**
 	 *
-	 * @param type $filename
+	 * @param string $filename
 	 */
 	public function __construct( $filename ) {
 		$this->origFilename = $filename;
