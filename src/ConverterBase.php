@@ -6,10 +6,10 @@ use SplFileInfo;
 
 abstract class ConverterBase implements IConverter {
 
-		/**
-		 *
-		 * @var array
-		 */
+	/**
+	 *
+	 * @var array
+	 */
 	protected $config = [];
 
 	/**

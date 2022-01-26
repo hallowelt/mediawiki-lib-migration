@@ -111,7 +111,7 @@ class TitleBuilder {
 
 	/**
 	 *
-	 * @param type $segment
+	 * @param string $segment
 	 * @return TitleBuilder
 	 */
 	public function appendTitleSegment( $segment ) : TitleBuilder {

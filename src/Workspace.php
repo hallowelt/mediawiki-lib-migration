@@ -76,7 +76,7 @@ class Workspace {
 
 	/**
 	 *
-	 * @param type $subpath
+	 * @param string $subpath
 	 * @return void
 	 */
 	private function ensurePath( $subpath ) {
