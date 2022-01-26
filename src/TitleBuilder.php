@@ -179,6 +179,7 @@ class TitleBuilder {
 		$segmentParts = array_map( 'trim', $segmentParts );
 		$segment = implode( ', ', $segmentParts );
 		$segment = str_replace( ' ', '_', $segment );
+		$segment = str_replace( ':', '_', $segment );
 		$segment = preg_replace( static::getTitleInvalidRegex(), '_',  $segment );
 		//MediaWiki normalizes multiple spaces/undescores into one single underscore
 		$segment = preg_replace('#_+#si', '_',  $segment );
