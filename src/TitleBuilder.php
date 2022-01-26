@@ -2,41 +2,39 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
-use HalloWelt\MediaWiki\Lib\Migration\InvalidTitleException;
-
 class TitleBuilder {
 
-	const NS_MEDIA = -2;
-	const NS_SPECIAL = -1;
+	public const NS_MEDIA = -2;
+	public const NS_SPECIAL = -1;
 
-	const NS_MAIN = 0;
-	const NS_TALK = 1;
-	const NS_USER = 2;
-	const NS_USER_TALK = 3;
-	const NS_PROJECT = 4;
-	const NS_PROJECT_TALK = 5;
-	const NS_FILE = 6;
-	const NS_FILE_TALK = 7;
-	const NS_MEDIAWIKI = 8;
-	const NS_MEDIAWIKI_TALK = 9;
-	const NS_TEMPLATE = 10;
-	const NS_TEMPLATE_TALK = 11;
-	const NS_HELP = 12;
-	const NS_HELP_TALK = 13;
-	const NS_CATEGORY = 14;
-	const NS_CATEGORY_TALK = 15;
+	public const NS_MAIN = 0;
+	public const NS_TALK = 1;
+	public const NS_USER = 2;
+	public const NS_USER_TALK = 3;
+	public const NS_PROJECT = 4;
+	public const NS_PROJECT_TALK = 5;
+	public const NS_FILE = 6;
+	public const NS_FILE_TALK = 7;
+	public const NS_MEDIAWIKI = 8;
+	public const NS_MEDIAWIKI_TALK = 9;
+	public const NS_TEMPLATE = 10;
+	public const NS_TEMPLATE_TALK = 11;
+	public const NS_HELP = 12;
+	public const NS_HELP_TALK = 13;
+	public const NS_CATEGORY = 14;
+	public const NS_CATEGORY_TALK = 15;
 
-	const NS_FORM = 106;
-	const NS_FORM_TALK = 107;
+	public const NS_FORM = 106;
+	public const NS_FORM_TALK = 107;
 
-	const NS_PROPERTY = 102;
-	const NS_PROPERTY_TALK = 103;
+	public const NS_PROPERTY = 102;
+	public const NS_PROPERTY_TALK = 103;
 
-	const NS_MODULE = 828;
-	const NS_MODULE_TALK = 829;
+	public const NS_MODULE = 828;
+	public const NS_MODULE_TALK = 829;
 
-	const NS_BOOK = 1504;
-	const NS_BOOK_TALK = 1505;
+	public const NS_BOOK = 1504;
+	public const NS_BOOK_TALK = 1505;
 
 	/**
 	 * For migration purposes we always rely on the "canonical" (englisch) namespace prefixes.
@@ -99,12 +97,12 @@ class TitleBuilder {
 
 	/**
 	 *
-	 * @param integer $namespaceId
+	 * @param int $namespaceId
 	 * @return TitleBuilder
 	 */
 	public function setNamespace( int $namespaceId ) : TitleBuilder {
 		$this->namespacePrefix = (string)$namespaceId;
-		if( isset( $this->namespaceMap[$namespaceId] ) ) {
+		if ( isset( $this->namespaceMap[$namespaceId] ) ) {
 			$this->namespacePrefix = $this->namespaceMap[$namespaceId];
 		}
 
@@ -113,12 +111,12 @@ class TitleBuilder {
 
 	/**
 	 *
-	 * @param [type] $segment
+	 * @param type $segment
 	 * @return TitleBuilder
 	 */
 	public function appendTitleSegment( $segment ) : TitleBuilder {
 		$cleanedSegment = $this->cleanTitleSegment( $segment );
-		if( empty( $cleanedSegment ) ) {
+		if ( empty( $cleanedSegment ) ) {
 			return $this;
 		}
 		$this->titleSegments[] = $cleanedSegment;
@@ -149,24 +147,24 @@ class TitleBuilder {
 	 */
 	public function build() : string {
 		$prefix = '';
-		if( !empty( $this->namespacePrefix ) ) {
+		if ( !empty( $this->namespacePrefix ) ) {
 			$prefix = $this->namespacePrefix . ':';
 		}
-		if( empty( $this->titleSegments ) ) {
+		if ( empty( $this->titleSegments ) ) {
 			throw new InvalidTitleException( '', "No title segments set" );
 		}
 
 		$titleText = implode( '/', $this->titleSegments );
 		$titleText = trim( $titleText, " \t\n\r\0\x0B/" );
 
-		if( mb_strlen( $titleText ) > 255 ) {
+		if ( mb_strlen( $titleText ) > 255 ) {
 			throw new InvalidTitleException(
 				$titleText,
 				"Title '$titleText' exceeds maximum length of 255 chars!"
 			);
 		}
 
-		return $prefix.$titleText;
+		return $prefix . $titleText;
 	}
 
 	/**
@@ -180,9 +178,9 @@ class TitleBuilder {
 		$segment = implode( ', ', $segmentParts );
 		$segment = str_replace( ' ', '_', $segment );
 		$segment = preg_replace( static::getTitleInvalidRegex(), '_',  $segment );
-		//MediaWiki normalizes multiple spaces/undescores into one single underscore
-		$segment = preg_replace('#_+#si', '_',  $segment );
-		$segment = trim( $segment, " _\t");
+		// MediaWiki normalizes multiple spaces/undescores into one single underscore
+		$segment = preg_replace( '#_+#si', '_',  $segment );
+		$segment = trim( $segment, " _\t" );
 		return trim( $segment );
 	}
 
@@ -190,6 +188,8 @@ class TitleBuilder {
 	 * See
 	 * - https://github.com/wikimedia/mediawiki/blob/05ce3b7740951cb26b29bbe3ac9deb610541df48/includes/title/MediaWikiTitleCodec.php#L511-L538
 	 * - https://github.com/wikimedia/mediawiki/blob/05ce3b7740951cb26b29bbe3ac9deb610541df48/includes/DefaultSettings.php#L3901-L3925
+	 *
+	 * @return string
 	 */
 	public static function getTitleInvalidRegex() {
 		static $rxTc = false;

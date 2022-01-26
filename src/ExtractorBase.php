@@ -2,9 +2,6 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
-use HalloWelt\MediaWiki\Lib\Migration\DataBuckets;
-use HalloWelt\MediaWiki\Lib\Migration\IExtractor;
-use HalloWelt\MediaWiki\Lib\Migration\Workspace;
 use SplFileInfo;
 
 abstract class ExtractorBase implements IExtractor {
@@ -86,7 +83,7 @@ abstract class ExtractorBase implements IExtractor {
 	 * @param SplFileInfo $file
 	 * @return bool
 	 */
-	protected abstract function doExtract( SplFileInfo $file ): bool;
+	abstract protected function doExtract( SplFileInfo $file ): bool;
 
 	/**
 	 *

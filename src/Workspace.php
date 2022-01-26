@@ -28,8 +28,8 @@ class Workspace {
 	public function loadData( $filename ): array {
 		$filepathname = $this->makeFilepathname( $filename );
 		$data = [];
-		if( file_exists( $filepathname ) ) {
-			$data = require( $filepathname );
+		if ( file_exists( $filepathname ) ) {
+			$data = require $filepathname;
 		}
 		return is_array( $data ) ? $data : [];
 	}
@@ -69,15 +69,20 @@ class Workspace {
 	public function saveRawContent( $contentId, $rawData ) {
 		$this->ensurePath( 'content/raw' );
 		$filepath = "/content/raw/$contentId.mraw";
-		file_put_contents( $this->workspaceDir->getPathname().$filepath, $rawData );
+		file_put_contents( $this->workspaceDir->getPathname() . $filepath, $rawData );
 
 		return $filepath;
 	}
 
+	/**
+	 *
+	 * @param type $subpath
+	 * @return void
+	 */
 	private function ensurePath( $subpath ) {
-		$path = $this->workspaceDir->getPathname() ."/$subpath";
-		if( !file_exists( $path ) ) {
-			mkdir($path, 0755, true );
+		$path = $this->workspaceDir->getPathname() . "/$subpath";
+		if ( !file_exists( $path ) ) {
+			mkdir( $path, 0755, true );
 		}
 	}
 
@@ -103,7 +108,7 @@ class Workspace {
 	public function saveUploadFile( $targetFileName, $content ) {
 		$filepath = "/result/images/$targetFileName";
 		$this->ensurePath( dirname( $filepath ) );
-		file_put_contents( $this->workspaceDir->getPathname().$filepath, $content );
+		file_put_contents( $this->workspaceDir->getPathname() . $filepath, $content );
 
 		return $filepath;
 	}

@@ -2,8 +2,6 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
-use HalloWelt\MediaWiki\Lib\Migration\InvalidTitleException;
-
 class WindowsFilename {
 
 	/**
@@ -95,36 +93,46 @@ class WindowsFilename {
 		'Ḿ' => 'M'
 	];
 
+	/**
+	 *
+	 * @param type $filename
+	 */
 	public function __construct( $filename ) {
 		$this->origFilename = $filename;
 	}
 
+	/**
+	 *
+	 * @return string
+	 */
 	public function __toString() {
 		$newFilename = $this->origFilename;
-		foreach( $this->substitutionMap as $nonAsciiChar => $asciiCharReplacement ) {
+		foreach ( $this->substitutionMap as $nonAsciiChar => $asciiCharReplacement ) {
 			$newFilename = str_replace(
 				$nonAsciiChar,
 				$asciiCharReplacement,
 				$newFilename
 			);
 		}
-		$newFilename = str_replace( ':',' ', $newFilename );
-		//Remove all non-ascii chars; HINT: http://www.stemkoski.com/php-remove-non-ascii-characters-from-a-string/
-		$newFilename = preg_replace( '/[^(\x20-\x7F)]*/','', $newFilename );
-		//Remove all characters that don't work on  Windows FS
-		$newFilename = str_replace( array( '/', '\\', '<', '>', '?', ':', '*', '"', '|', ';', '!' ), '', $newFilename );
-		//Use MediaWiki function
+		$newFilename = str_replace( ':', ' ', $newFilename );
+		// Remove all non-ascii chars; HINT: http://www.stemkoski.com/php-remove-non-ascii-characters-from-a-string/
+		$newFilename = preg_replace( '/[^(\x20-\x7F)]*/', '', $newFilename );
+		// Remove all characters that don't work on  Windows FS
+		$newFilename = str_replace( [ '/', '\\', '<', '>', '?', ':', '*', '"', '|', ';', '!' ], '', $newFilename );
+		// Use MediaWiki function
 		$newFilename = $this->wfStripIllegalFilenameChars( $newFilename );
 
 		$newFilename = preg_replace( '#  +#', ' ', $newFilename );
-		$newFilename = str_replace( ' .','.', $newFilename ); //"Some file .pdf" => "Some file.pdf"
-		$newFilename = str_replace( '_.','.', $newFilename ); //"Some file_.pdf" => "Some file.pdf"
-		$newFilename = str_replace( ' ','_', $newFilename );
+		// "Some file .pdf" => "Some file.pdf"
+		$newFilename = str_replace( ' .', '.', $newFilename );
+		// "Some file_.pdf" => "Some file.pdf"
+		$newFilename = str_replace( '_.', '.', $newFilename );
+		$newFilename = str_replace( ' ', '_', $newFilename );
 
 		$newFilename = trim( $newFilename, '_~' );
 		$newFilename = preg_replace( '#_+#', '_', $newFilename );
 
-		if( mb_strlen( $newFilename ) > 255 ) {
+		if ( mb_strlen( $newFilename ) > 255 ) {
 			throw new InvalidTitleException(
 				$newFilename,
 				"Filename '$newFilename' exceeds maximum length of 255 characters!"
