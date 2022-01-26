@@ -19,15 +19,18 @@ abstract class CSVBase extends AnalyzerBase {
 	 */
 	protected $currentLineNumber = 0;
 
-	public function doAnalyze( SplFileInfo $file ): bool {
+	/**
+	 * @inheritDoc
+	 */
+	protected function doAnalyze( SplFileInfo $file ): bool {
 		$lines = file( $file->getPathname() );
 		$csv = array_map( 'str_getcsv', $lines );
 
 		$this->currentLineNumber = 0;
-		foreach( $csv as $idx => $row ) {
+		foreach ( $csv as $idx => $row ) {
 			$this->currentLineNumber = $idx;
 			$this->currentLineData = $row;
-			if( $this->skipCurrentLine() ) {
+			if ( $this->skipCurrentLine() ) {
 				continue;
 			}
 			$this->doAnalyzeLine();
@@ -37,7 +40,7 @@ abstract class CSVBase extends AnalyzerBase {
 	}
 
 	protected function skipCurrentLine() {
-		if( $this->currentLineNumber === 0 && $this->skipHeaderLine() ) {
+		if ( $this->currentLineNumber === 0 && $this->skipHeaderLine() ) {
 			return true;
 		}
 
@@ -48,5 +51,5 @@ abstract class CSVBase extends AnalyzerBase {
 		return true;
 	}
 
-	protected abstract function doAnalyzeLine();
+	abstract protected function doAnalyzeLine();
 }

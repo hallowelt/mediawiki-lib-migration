@@ -3,11 +3,7 @@
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
 use HalloWelt\MediaWiki\Lib\CommandLineTools\Commands\BatchFileProcessorBase;
-use HalloWelt\MediaWiki\Lib\Migration\DataBuckets;
 use SplFileInfo;
-use HalloWelt\MediaWiki\Lib\Migration\Workspace;
-use HalloWelt\MediaWiki\Lib\Migration\IFileProcessorEventHandler;
-
 
 abstract class CliCommandBase extends BatchFileProcessorBase {
 
@@ -33,6 +29,10 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	 */
 	protected $eventhandlers = [];
 
+	/**
+	 *
+	 * @param array $config
+	 */
 	public function __construct( $config ) {
 		parent::__construct();
 		$this->config = $config;
@@ -58,18 +58,22 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 		$this->buckets->saveToWorkspace( $this->workspace );
 	}
 
+	/**
+	 *
+	 * @return array
+	 */
 	protected function getBucketKeys() {
 		return [];
 	}
 
 	protected function runBeforeProcessFilesEventHandlers() {
-		foreach( $this->eventhandlers as $handler ) {
+		foreach ( $this->eventhandlers as $handler ) {
 			$handler->beforeProcessFiles( new SplFileInfo( $this->src ) );
 		}
 	}
 
 	protected function runAfterProcessFilesEventHandlers() {
-		foreach( $this->eventhandlers as $handler ) {
+		foreach ( $this->eventhandlers as $handler ) {
 			$handler->afterProcessFiles( new SplFileInfo( $this->src ) );
 		}
 	}
@@ -77,24 +81,24 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	/**
 	 *
 	 * @param SplFileInfo $file
-	 * @return boolean
+	 * @return bool
 	 */
 	protected function processFile( SplFileInfo $file ): bool {
-		//TODO: Ensure workspace dirs!?
+		// TODO: Ensure workspace dirs!?
 		return $this->doProcessFile();
 	}
 
 	/**
 	 * @return boolean
 	 */
-	protected abstract function doProcessFile(): bool;
+	abstract protected function doProcessFile(): bool;
 
 	/**
 	 *
 	 * @return array
 	 */
 	protected function makeExtensionWhitelist(): array {
-		if( isset( $this->config['file-extension-whitelist' ] ) ) {
+		if ( isset( $this->config['file-extension-whitelist' ] ) ) {
 			return $this->config['file-extension-whitelist' ];
 		}
 		return [];
