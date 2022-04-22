@@ -3,7 +3,11 @@
 	"description": "Class library for migration projects for MediaWiki",
 	"type": "library",
 	"require-dev": {
-		"phpunit/phpunit": "^6.5"
+		"phpunit/phpunit": "^6.5",
+		"mediawiki/minus-x": "1.1.1",
+		"jakub-onderka/php-parallel-lint": "1.0.0",
+		"jakub-onderka/php-console-highlighter": "0.4.0",
+		"mediawiki/mediawiki-codesniffer": "31.0.0"
 	},
 	"license": "GPL-3.0-only",
 	"authors": [
@@ -20,5 +24,16 @@
 			"HalloWelt\\MediaWiki\\Lib\\Migration\\": "src/",
 			"HalloWelt\\MediaWiki\\Lib\\Migration\\Tests\\": "tests/phpunit/"
 		}
+	},
+	"scripts": {
+		"test": [
+			"parallel-lint . --exclude vendor --exclude node_modules",
+			"minus-x check .",
+			"phpcs -sp"
+		],
+		"fix": [
+			"minus-x fix .",
+			"phpcbf"
+		]
 	}
 }
