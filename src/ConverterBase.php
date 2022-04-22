@@ -2,12 +2,11 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
-use HalloWelt\MediaWiki\Lib\Migration\Workspace;
 use SplFileInfo;
 
 abstract class ConverterBase implements IConverter {
 
-		/**
+	/**
 	 *
 	 * @var array
 	 */
@@ -33,7 +32,6 @@ abstract class ConverterBase implements IConverter {
 	public function __construct( $config, Workspace $workspace ) {
 		$this->config = $config;
 		$this->workspace = $workspace;
-		;
 	}
 
 	/**
@@ -56,5 +54,10 @@ abstract class ConverterBase implements IConverter {
 		return $result;
 	}
 
-	protected abstract function doConvert( SplFileInfo $file ): string;
+	/**
+	 *
+	 * @param SplFileInfo $file
+	 * @return string
+	 */
+	abstract protected function doConvert( SplFileInfo $file ): string;
 }

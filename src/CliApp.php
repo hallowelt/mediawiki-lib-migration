@@ -6,6 +6,10 @@ use Symfony\Component\Console\Application;
 
 class CliApp extends Application {
 
+	/**
+	 *
+	 * @param string $config
+	 */
 	public function __construct( $config ) {
 		parent::__construct( 'Migrate' );
 

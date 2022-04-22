@@ -25,13 +25,13 @@ abstract class CSVBase extends ExtractorBase {
 	 */
 	protected function doExtract( SplFileInfo $file ): bool {
 		$lines = file( $file->getPathname() );
-		$csv = array_map('str_getcsv', $lines );
+		$csv = array_map( 'str_getcsv', $lines );
 
 		$this->currentLineNumber = 0;
-		foreach( $csv as $idx => $row ) {
+		foreach ( $csv as $idx => $row ) {
 			$this->currentLineNumber = $idx;
 			$this->currentLineData = $row;
-			if( $this->skipCurrentLine() ) {
+			if ( $this->skipCurrentLine() ) {
 				continue;
 			}
 			$this->doExtractLine();
@@ -40,10 +40,10 @@ abstract class CSVBase extends ExtractorBase {
 		return true;
 	}
 
-	protected abstract function doExtractLine();
+	abstract protected function doExtractLine();
 
 	protected function skipCurrentLine() {
-		if( $this->currentLineNumber === 0 && $this->skipHeaderLine() ) {
+		if ( $this->currentLineNumber === 0 && $this->skipHeaderLine() ) {
 			return true;
 		}
 

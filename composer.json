@@ -2,13 +2,6 @@
 	"name": "hallowelt/mediawiki-lib-migration",
 	"description": "Class library for migration projects for MediaWiki",
 	"type": "library",
-	"require-dev": {
-		"mediawiki/mediawiki-codesniffer": "31.0.0",
-		"phpunit/phpunit": "^6.5",
-		"mediawiki/minus-x": "1.1.1",
-		"jakub-onderka/php-parallel-lint": "1.0.0",
-		"jakub-onderka/php-console-highlighter": "0.4.0"
-	},
 	"license": "GPL-3.0-only",
 	"authors": [
 		{
@@ -19,6 +12,14 @@
 	"require": {
 		"symfony/console": "v3.4.9"
 	},
+	"require-dev": {
+		"mediawiki/mediawiki-codesniffer": "31.0.0",
+		"mediawiki/mediawiki-phan-config": "0.11.0",
+		"mediawiki/minus-x": "1.1.1",
+		"jakub-onderka/php-parallel-lint": "1.0.0",
+		"jakub-onderka/php-console-highlighter": "0.4.0",
+		"phpunit/phpunit": "^8"
+	},
 	"autoload": {
 		"psr-4": {
 			"HalloWelt\\MediaWiki\\Lib\\Migration\\": "src/",
@@ -26,6 +27,9 @@
 		}
 	},
 	"scripts": {
+		"unittest": [
+			"vendor/phpunit/phpunit/phpunit --configuration .phpunit.xml"
+		],
 		"test": [
 			"parallel-lint . --exclude vendor --exclude node_modules",
 			"minus-x check .",
@@ -34,6 +38,9 @@
 		"fix": [
 			"minus-x fix .",
 			"phpcbf"
+		],
+		"lint": [
+			"phan --no-progress-bar -m text | sed 's, ,:,'"
 		]
 	}
 }

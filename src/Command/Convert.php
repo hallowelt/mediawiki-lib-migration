@@ -2,9 +2,9 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration\Command;
 
+use Exception;
 use HalloWelt\MediaWiki\Lib\Migration\CliCommandBase;
 use HalloWelt\MediaWiki\Lib\Migration\IConverter;
-use Exception;
 use HalloWelt\MediaWiki\Lib\Migration\IOutputAwareInterface;
 
 class Convert extends CliCommandBase {
@@ -37,18 +37,18 @@ class Convert extends CliCommandBase {
 		$this->makeTargetPathname();
 		$this->ensureTargetPath();
 
-		foreach( $converterFactoryCallbacks as $key => $callback ) {
+		foreach ( $converterFactoryCallbacks as $key => $callback ) {
 			$converter = call_user_func_array(
 				$callback,
 				[ $this->config, $this->workspace ]
 			);
-			if( $converter instanceof IConverter === false ) {
+			if ( $converter instanceof IConverter === false ) {
 				throw new Exception(
 					"Factory callback for converter '$key' did not return an "
 					. "IConverter object"
 				);
 			}
-			if( $converter instanceof IOutputAwareInterface ) {
+			if ( $converter instanceof IOutputAwareInterface ) {
 				$converter->setOutput( $this->output );
 			}
 			$result = $converter->convert( $this->currentFile );
@@ -68,7 +68,7 @@ class Convert extends CliCommandBase {
 
 	private function ensureTargetPath() {
 		$baseTargetPath = dirname( $this->targetPathname );
-		if( !file_exists( $baseTargetPath ) ) {
+		if ( !file_exists( $baseTargetPath ) ) {
 			mkdir( $baseTargetPath, 0755, true );
 		}
 	}

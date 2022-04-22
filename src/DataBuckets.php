@@ -2,16 +2,12 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
-use HalloWelt\MediaWiki\Lib\Migration\Workspace;
-
 /**
  * Presents key-value file storage
  *
  * @package HalloWelt\MediaWiki\Lib\Migration
  */
 class DataBuckets {
-
-
 
 	/**
 	 *
@@ -24,7 +20,7 @@ class DataBuckets {
 	 * @param string[] $bucketKeys
 	 */
 	public function __construct( $bucketKeys ) {
-		foreach( $bucketKeys as $bucketKey ) {
+		foreach ( $bucketKeys as $bucketKey ) {
 			$this->buckets[$bucketKey] = [];
 		}
 	}
@@ -41,37 +37,34 @@ class DataBuckets {
 	 * * In case if data bucket has no data yet:<br/>
 	 * <var>$forceArray</var> is set to <tt>true</tt> - data will be wrapped into array<br/>
 	 * <var>$forceArray</var> is set to <tt>false</tt> - data will be stored as single value
-	 * 
+	 *
 	 * @param string $bucketKey
 	 * @param string|null $path
-	 * @param string|int|boolean|string[]|int[]|boolean[]|array $value
+	 * @param string|int|bool|string[]|int[]|bool[]|array $value
 	 * @param bool $forceArray Always create an array as value
 	 * @param bool $addUnique Force unique values in te resulting array
 	 */
 	public function addData( $bucketKey, $path, $value, $forceArray = true, $addUnique = false ) {
-		if( $path === null ) {
+		if ( $path === null ) {
 			$this->buckets[$bucketKey][] = $value;
-		}
-		else {
-			if( $forceArray && !isset( $this->buckets[$bucketKey][$path] ) ) {
+		} else {
+			if ( $forceArray && !isset( $this->buckets[$bucketKey][$path] ) ) {
 				$this->buckets[$bucketKey][$path] = [];
 			}
-			if( isset( $this->buckets[$bucketKey][$path] ) ) {
-				if( !$forceArray ) {
+			if ( isset( $this->buckets[$bucketKey][$path] ) ) {
+				if ( !$forceArray ) {
 					$this->buckets[$bucketKey][$path] = $value;
-				}
-				else {
-					if( is_array( $this->buckets[$bucketKey][$path] ) === false ) {
+				} else {
+					if ( is_array( $this->buckets[$bucketKey][$path] ) === false ) {
 						$this->buckets[$bucketKey][$path] = [ $this->buckets[$bucketKey][$path] ];
 					}
 					$this->buckets[$bucketKey][$path][] = $value;
-					if( $addUnique ) {
+					if ( $addUnique ) {
 						$this->buckets[$bucketKey][$path] = array_unique( $this->buckets[$bucketKey][$path] );
 					}
 				}
-			}
-			else {
-				//TODO: Implement $path resolution!
+			} else {
+				// TODO: Implement $path resolution!
 				$this->buckets[$bucketKey][$path] = $value;
 			}
 		}
@@ -100,7 +93,7 @@ class DataBuckets {
 	 * @param Workspace $workspace
 	 */
 	public function saveToWorkspace( Workspace $workspace ) {
-		foreach( $this->buckets as $bucketKey => $data ) {
+		foreach ( $this->buckets as $bucketKey => $data ) {
 			$workspace->saveData( $bucketKey, $this->buckets[$bucketKey] );
 		}
 	}
@@ -110,7 +103,7 @@ class DataBuckets {
 	 * @param Workspace $workspace
 	 */
 	public function loadFromWorkspace( Workspace $workspace ) {
-		foreach( $this->buckets as $bucketKey => $data ) {
+		foreach ( $this->buckets as $bucketKey => $data ) {
 			$this->buckets[$bucketKey] = $workspace->loadData( $bucketKey );
 		}
 	}
