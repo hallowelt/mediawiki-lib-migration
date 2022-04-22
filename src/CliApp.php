@@ -71,7 +71,7 @@ class CliApp extends Application {
 	private function addCommandOverride( $command, $config ): void {
 		$command = call_user_func_array(
 			$config['command-overrides'][$command]['factory'],
-			[ $this->config ]
+			[ $config ]
 		);
 		$this->add( $command );
 	}
