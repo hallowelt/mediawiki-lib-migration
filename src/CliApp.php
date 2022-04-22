@@ -25,8 +25,7 @@ class CliApp extends Application {
 	private function addCommandAnalyze( $config ): void {
 		if ( $this->hasOverride( 'analyze', $config ) ) {
 			$this->addCommandOverride( 'analyze', $config );
-		}
-		else {
+		} else {
 			$this->add( new Command\Analyze( $config ) );
 		}
 	}
@@ -37,8 +36,7 @@ class CliApp extends Application {
 	private function addCommandExtract( $config ): void {
 		if ( $this->hasOverride( 'extract', $config ) ) {
 			$this->addCommandOverride( 'extract', $config );
-		}
-		else {
+		} else {
 			$this->add( new Command\Extract( $config ) );
 		}
 	}
@@ -49,8 +47,7 @@ class CliApp extends Application {
 	private function addCommandConvert( $config ): void {
 		if ( $this->hasOverride( 'convert', $config ) ) {
 			$this->addCommandOverride( 'convert', $config );
-		}
-		else {
+		} else {
 			$this->add( new Command\Convert( $config ) );
 		}
 	}
@@ -61,8 +58,7 @@ class CliApp extends Application {
 	private function addCommandCompose( $config ): void {
 		if ( $this->hasOverride( 'compose', $config ) ) {
 			$this->addCommandOverride( 'compose', $config );
-		}
-		else {
+		} else {
 			$this->add( new Command\Compose( $config ) );
 		}
 	}
@@ -83,9 +79,9 @@ class CliApp extends Application {
 	/**
 	 * @param string $command
 	 * @param array $config
-	 * @return boolean
+	 * @return bool
 	 */
-	private function hasOverride( $command, $config): bool {
+	private function hasOverride( $command, $config ): bool {
 		if ( isset( $config['command-overrides'][$command]['factory'] ) ) {
 			return true;
 		}
