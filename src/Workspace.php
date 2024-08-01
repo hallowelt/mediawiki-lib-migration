@@ -63,12 +63,13 @@ class Workspace {
 	 *
 	 * @param string $contentId
 	 * @param string $rawData
+	 * @param string $path
 	 *
 	 * @return string The path
 	 */
-	public function saveRawContent( $contentId, $rawData ) {
-		$this->ensurePath( 'content/raw' );
-		$filepath = "/content/raw/$contentId.mraw";
+	public function saveRawContent( $contentId, $rawData, $path = 'content/raw' ) {
+		$this->ensurePath( $path );
+		$filepath = "/$path/$contentId.mraw";
 		file_put_contents( $this->workspaceDir->getPathname() . $filepath, $rawData );
 
 		return $filepath;
