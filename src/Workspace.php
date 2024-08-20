@@ -23,10 +23,14 @@ class Workspace {
 	/**
 	 *
 	 * @param string $filename
+	 * @param string $path
 	 * @return array
 	 */
-	public function loadData( $filename ): array {
+	public function loadData( $filename, $path = '' ): array {
 		$filepathname = $this->makeFilepathname( $filename );
+		if ( $path !== '' ) {
+			$filepathname = "$path/$filepathname";
+		}
 		$data = [];
 		if ( file_exists( $filepathname ) ) {
 			$data = require $filepathname;
