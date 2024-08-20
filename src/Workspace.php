@@ -23,10 +23,14 @@ class Workspace {
 	/**
 	 *
 	 * @param string $filename
+	 * @param string $path
 	 * @return array
 	 */
-	public function loadData( $filename ): array {
+	public function loadData( $filename, $path = '' ): array {
 		$filepathname = $this->makeFilepathname( $filename );
+		if ( $path !== '' ) {
+			$filepathname = "$path/$filepathname";
+		}
 		$data = [];
 		if ( file_exists( $filepathname ) ) {
 			$data = require $filepathname;
@@ -38,11 +42,17 @@ class Workspace {
 	 *
 	 * @param string $filename
 	 * @param array $data
+	 * @param string $path
 	 * @return bool
 	 */
-	public function saveData( $filename, $data ): bool {
+	public function saveData( $filename, $data, $path = '' ): bool {
 		$formattedData = var_export( $data, true );
 		$fileContent = "<?php\n\nreturn $formattedData;";
+
+		if ( $path !== '' ) {
+			$this->ensurePath( $path );
+			$filename = "$path/$filename";
+		}
 
 		$filepathname = $this->makeFilepathname( $filename );
 		$result = file_put_contents( $filepathname, $fileContent );
@@ -104,10 +114,11 @@ class Workspace {
 	 *
 	 * @param string $targetFileName
 	 * @param string $content
+	 * @param string $path
 	 * @return string The path
 	 */
-	public function saveUploadFile( $targetFileName, $content ) {
-		$filepath = "/result/images/$targetFileName";
+	public function saveUploadFile( $targetFileName, $content, $path = 'result/images' ) {
+		$filepath = "/$path/$targetFileName";
 		$this->ensurePath( dirname( $filepath ) );
 		file_put_contents( $this->workspaceDir->getPathname() . $filepath, $content );
 
