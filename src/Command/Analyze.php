@@ -7,6 +7,7 @@ use HalloWelt\MediaWiki\Lib\Migration\CliCommandBase;
 use HalloWelt\MediaWiki\Lib\Migration\DataBuckets;
 use HalloWelt\MediaWiki\Lib\Migration\IAnalyzer;
 use HalloWelt\MediaWiki\Lib\Migration\IOutputAwareInterface;
+use HalloWelt\MediaWiki\Lib\Migration\IUserInteraction;
 
 class Analyze extends CliCommandBase {
 
@@ -55,6 +56,11 @@ class Analyze extends CliCommandBase {
 			}
 			if ( $analyzer instanceof IOutputAwareInterface ) {
 				$analyzer->setOutput( $this->output );
+			}
+			if ( $analyzer instanceof IUserInteraction ) {
+				$analyzer->setQuestionHelper( $this->getHelper( 'question' ) );
+				$analyzer->setOutput( $this->output );
+				$analyzer->setInput( $this->input );
 			}
 			$result = $analyzer->analyze( $this->currentFile );
 			// TODO: Evaluate result
