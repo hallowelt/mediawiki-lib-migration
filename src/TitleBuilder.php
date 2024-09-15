@@ -177,6 +177,7 @@ class TitleBuilder {
 		$segmentParts = array_map( 'trim', $segmentParts );
 		$segment = implode( ', ', $segmentParts );
 		$segment = str_replace( ' ', '_', $segment );
+		$segment = str_replace( ':', '_', $segment );
 		$segment = preg_replace( static::getTitleInvalidRegex(), '_',  $segment );
 		// Slash is usually a legal char, but not in the segment
 		$segment = preg_replace( '/\\//', '_', $segment );
