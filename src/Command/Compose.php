@@ -21,7 +21,7 @@ class Compose extends CliCommandBase {
 		return [];
 	}
 
-	protected function processFiles() {
+	protected function processFiles(): int {
 		$this->ensureTargetDirs();
 		$this->workspace = new Workspace( new SplFileInfo( $this->src ) );
 		$this->buckets = new DataBuckets( [
@@ -38,6 +38,8 @@ class Compose extends CliCommandBase {
 			$composer->buildXML( $mediawikixmlbuilder );
 		}
 		$mediawikixmlbuilder->buildAndSave( $this->dest . '/result/output.xml' );
+
+		return 0;
 	}
 
 	/**

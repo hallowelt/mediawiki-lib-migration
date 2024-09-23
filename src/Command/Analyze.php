@@ -41,6 +41,7 @@ class Analyze extends CliCommandBase {
 	}
 
 	protected function doProcessFile(): bool {
+		$this->output->writeln( "Analyzing file '{$this->currentFile->getFilename()}'" );
 		$analyzerFactoryCallbacks = $this->config['analyzers'];
 		foreach ( $analyzerFactoryCallbacks as $key => $callback ) {
 			$analyzer = call_user_func_array(
