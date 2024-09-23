@@ -8,7 +8,7 @@ class CliApp extends Application {
 
 	/**
 	 *
-	 * @param string $config
+	 * @param array $config
 	 */
 	public function __construct( $config ) {
 		parent::__construct( 'Migrate' );
