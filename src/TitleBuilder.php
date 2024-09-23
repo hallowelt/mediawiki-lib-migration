@@ -39,6 +39,8 @@ class TitleBuilder {
 	/**
 	 * For migration purposes we always rely on the "canonical" (englisch) namespace prefixes.
 	 * array
+	 *
+	 * @var array
 	 */
 	private $namespaceMap = [];
 
@@ -100,7 +102,7 @@ class TitleBuilder {
 	 * @param int $namespaceId
 	 * @return TitleBuilder
 	 */
-	public function setNamespace( int $namespaceId ) : TitleBuilder {
+	public function setNamespace( int $namespaceId ): TitleBuilder {
 		$this->namespacePrefix = (string)$namespaceId;
 		if ( isset( $this->namespaceMap[$namespaceId] ) ) {
 			$this->namespacePrefix = $this->namespaceMap[$namespaceId];
@@ -114,7 +116,7 @@ class TitleBuilder {
 	 * @param string $segment
 	 * @return TitleBuilder
 	 */
-	public function appendTitleSegment( $segment ) : TitleBuilder {
+	public function appendTitleSegment( $segment ): TitleBuilder {
 		$cleanedSegment = $this->cleanTitleSegment( $segment );
 		if ( empty( $cleanedSegment ) ) {
 			return $this;
@@ -127,7 +129,7 @@ class TitleBuilder {
 	 *
 	 * @return TitleBuilder
 	 */
-	public function reduceTitleSegments() : TitleBuilder {
+	public function reduceTitleSegments(): TitleBuilder {
 		$this->titleSegments = array_unique( array_values( $this->titleSegments ) );
 		return $this;
 	}
@@ -136,7 +138,7 @@ class TitleBuilder {
 	 *
 	 * @return TitleBuilder
 	 */
-	public function invertTitleSegments() : TitleBuilder {
+	public function invertTitleSegments(): TitleBuilder {
 		$this->titleSegments = array_reverse( $this->titleSegments );
 		return $this;
 	}
@@ -145,7 +147,7 @@ class TitleBuilder {
 	 * @return string
 	 * @throws InvalidTitleException
 	 */
-	public function build() : string {
+	public function build(): string {
 		$prefix = '';
 		if ( !empty( $this->namespacePrefix ) ) {
 			$prefix = $this->namespacePrefix . ':';
@@ -177,11 +179,11 @@ class TitleBuilder {
 		$segmentParts = array_map( 'trim', $segmentParts );
 		$segment = implode( ', ', $segmentParts );
 		$segment = str_replace( ' ', '_', $segment );
-		$segment = preg_replace( static::getTitleInvalidRegex(), '_',  $segment );
+		$segment = preg_replace( static::getTitleInvalidRegex(), '_', $segment );
 		// Slash is usually a legal char, but not in the segment
 		$segment = preg_replace( '/\\//', '_', $segment );
 		// MediaWiki normalizes multiple spaces/undescores into one single underscore
-		$segment = preg_replace( '#_+#si', '_',  $segment );
+		$segment = preg_replace( '#_+#si', '_', $segment );
 		$segment = trim( $segment, " _\t" );
 		return trim( $segment );
 	}

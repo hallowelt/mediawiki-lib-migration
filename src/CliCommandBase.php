@@ -89,7 +89,7 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	}
 
 	/**
-	 * @return boolean
+	 * @return bool
 	 */
 	abstract protected function doProcessFile(): bool;
 

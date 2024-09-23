@@ -11,5 +11,5 @@ interface IConverter {
 	 * @param SplFileInfo $file
 	 * @return string
 	 */
-	public function convert( SplFileInfo $file ) : string;
+	public function convert( SplFileInfo $file ): string;
 }

@@ -26,10 +26,13 @@ class Convert extends CliCommandBase {
 		return parent::makeFileList();
 	}
 
-	protected function makeExtensionWhitelist() : array {
+	protected function makeExtensionWhitelist(): array {
 		return [ 'mraw' ];
 	}
 
+	/**
+	 * @var string
+	 */
 	protected $targetPathname = '';
 
 	protected function doProcessFile(): bool {

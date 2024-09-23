@@ -64,7 +64,7 @@ abstract class ExtractorBase implements IExtractor {
 	 * @param DataBuckets $buckets
 	 * @return IExtractor
 	 */
-	public static function factory( $config, Workspace $workspace, DataBuckets $buckets ) : IExtractor {
+	public static function factory( $config, Workspace $workspace, DataBuckets $buckets ): IExtractor {
 		return new static( $config, $workspace, $buckets );
 	}
 
