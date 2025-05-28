@@ -48,6 +48,10 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	}
 
 	protected function beforeProcessFiles() {
+		if ( !is_dir( $this->dest ) ) {
+			$this->output->writeln( "Destination does not exist" );
+			exit();
+		}
 		$workspaceDir = new SplFileInfo( $this->dest );
 		$this->workspace = new Workspace( $workspaceDir );
 		$this->buckets = new DataBuckets( $this->getBucketKeys() );

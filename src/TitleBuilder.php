@@ -148,7 +148,8 @@ class TitleBuilder {
 	public function build() : string {
 		$prefix = '';
 		if ( !empty( $this->namespacePrefix ) ) {
-			$prefix = $this->namespacePrefix . ':';
+			$prefix = $this->namespacePrefix;
+
 		}
 		if ( empty( $this->titleSegments ) ) {
 			throw new InvalidTitleException( '', "No title segments set" );
