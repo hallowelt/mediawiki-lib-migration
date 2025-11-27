@@ -21,16 +21,27 @@ class Compose extends CliCommandBase {
 		return [];
 	}
 
-	protected function processFiles() {
-		$this->ensureTargetDirs();
-		$this->workspace = new Workspace( new SplFileInfo( $this->src ) );
-		$this->buckets = new DataBuckets( [
+	/**
+	 *
+	 * @return array
+	 */
+	protected function getBucketKeys() {
+		return [
 			'files',
 			'revision-contents',
 			'title-attachments',
 			'title-metadata',
 			'title-revisions',
-		] );
+		];
+	}
+
+	protected function processFiles() {
+		$this->ensureTargetDirs();
+		$this->workspace = new Workspace( new SplFileInfo( $this->src ) );
+
+		$this->initExecutionTime();
+
+		$this->buckets = new DataBuckets( $this->getBucketKeys() );
 		$this->buckets->loadFromWorkspace( $this->workspace );
 		$composers = $this->makeComposers();
 		$mediawikixmlbuilder = new Builder();
@@ -38,6 +49,8 @@ class Compose extends CliCommandBase {
 			$composer->buildXML( $mediawikixmlbuilder );
 		}
 		$mediawikixmlbuilder->buildAndSave( $this->dest . '/result/output.xml' );
+
+		$this->logExecutionTime();
 	}
 
 	/**

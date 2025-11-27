@@ -7,6 +7,9 @@ use SplFileInfo;
 
 abstract class CliCommandBase extends BatchFileProcessorBase {
 
+	/** @var ExecutionTime */
+	protected $executionTime;
+
 	/**
 	 *
 	 * @var array
@@ -22,6 +25,11 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	 * @var DataBuckets
 	 */
 	protected $buckets = null;
+
+	/**
+	 * @var DataBuckets
+	 */
+	protected $executionTimeBuckets = null;
 
 	/**
 	 *
@@ -54,12 +62,35 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 		}
 		$workspaceDir = new SplFileInfo( $this->dest );
 		$this->workspace = new Workspace( $workspaceDir );
+
+		$this->initExecutionTime();
+
 		$this->buckets = new DataBuckets( $this->getBucketKeys() );
 		$this->buckets->loadFromWorkspace( $this->workspace );
 	}
 
 	protected function afterProcessFiles() {
 		$this->buckets->saveToWorkspace( $this->workspace );
+		$this->logExecutionTime();
+	}
+
+	protected function initExecutionTime() {
+		$this->executionTime = new ExecutionTime();
+		$this->executionTimeBuckets = new DataBuckets( [ 'execution-time' ] );
+		$this->executionTimeBuckets->loadFromWorkspace( $this->workspace );
+	}
+
+	protected function logExecutionTime() {
+		$time = $this->executionTime->getHumanReadableTime();
+		$this->output->writeln( "\nExecution time: {$time}\n" );
+		$this->executionTimeBuckets->addData(
+			'execution-time',
+			$this->getName(),
+			$time,
+			false,
+			true
+		);
+		$this->executionTimeBuckets->saveToWorkspace( $this->workspace );
 	}
 
 	/**
