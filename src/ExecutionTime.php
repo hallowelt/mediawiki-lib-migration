@@ -7,7 +7,7 @@ class ExecutionTime {
 	private $executionTimeStart;
 
 	/**
-	 * 
+	 *
 	 */
 	public function __construct() {
 		$this->executionTimeStart = $this->getMicrotime();
@@ -20,15 +20,15 @@ class ExecutionTime {
 		$executionTimeEnd = $this->getMicrotime();
 		$executionTime = $executionTimeEnd - $this->executionTimeStart;
 
-		$s = $executionTime%60;
-		$m = floor( ( $executionTime%3600 )/60 );
-		$h = floor( ( $executionTime%86400 )/3600 );
-		$d = floor( ( $executionTime%2592000 )/86400 );
+		$s = $executionTime % 60;
+		$m = floor( ( $executionTime % 3600 ) / 60 );
+		$h = floor( ( $executionTime % 86400 ) / 3600 );
+		$d = floor( ( $executionTime % 2592000 ) / 86400 );
 
 		$time = '';
 		if ( $d > 1 ) {
 			$time .= "{$d} days ";
-		} else if ( $d > 0 ) {
+		} elseif ( $d > 0 ) {
 			$time .= "{$d} day ";
 		}
 		$time .= "{$h}h {$m}m {$s}s";

@@ -76,7 +76,7 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 
 	protected function initExecutionTime() {
 		$this->executionTime = new ExecutionTime();
-		$this->executionTimeBuckets = new DataBuckets( ['execution-time'] );
+		$this->executionTimeBuckets = new DataBuckets( [ 'execution-time' ] );
 		$this->executionTimeBuckets->loadFromWorkspace( $this->workspace );
 	}
 
