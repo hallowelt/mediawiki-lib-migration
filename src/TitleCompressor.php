@@ -102,11 +102,11 @@ class TitleCompressor {
 		$titleSegments[0] = substr( $titleSegments[0], $namespaceLength + 1 );
 
 		$availableLength = 255;
-		$allowedLeafPageLength = ( int )( $availableLength / $numOfSegments );
+		$allowedLeafPageLength = (int)( $availableLength / $numOfSegments );
 		$leafPageTitle = array_pop( $titleSegments );
 
 		$availableLength = 255 - strlen( $allowedLeafPageLength );
-		$allowedRootLenght = ( int )( $availableLength / $numOfSegments );
+		$allowedRootLenght = (int)( $availableLength / $numOfSegments );
 		$rootTitle = array_shift( $titleSegments );
 		$rootTitle = "{$namespace}:{$rootTitle}";
 
@@ -130,7 +130,7 @@ class TitleCompressor {
 		if ( $numOfSegments > 1 ) {
 			// Avoid "division by zero"
 			$availableLength = 255 - strlen( $compressedRootTitle ) - strlen( $compressedLeafPageTitle );
-			$segmentLength = ( int )( $availableLength / $numOfSegments );
+			$segmentLength = (int)( $availableLength / $numOfSegments );
 
 			$curTitle = $rootTitle;
 			$this->compressedTitles[$rootTitle] = $compressedRootTitle;
