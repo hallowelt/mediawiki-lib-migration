@@ -29,7 +29,7 @@ class TitleCompressorTest extends TestCase {
 				=> 'ABC:A_very_very_very_long_root_page_title_exeeding_255_characters_to_test_title_compression'
 					. '_algorithm_of_mediawiki-lib-migration_TitleCompressor.php_which_should_reduce_manual_title'
 					. '_modification_after_analyze_process_by_human_operator_because_this_would_take_a_lot_of_time'
-					.'_sometimes',
+					. '_sometimes',
 			'123456702---one subpage, short root'
 				=> 'ABC:A_very_very_very_long_root_page_title/'
 					. 'exeeding_255_characters_to_test_title_compression_algorithm_of_mediawiki-lib-migration'
