@@ -16,11 +16,11 @@ class TitleCompressor {
 	private $compressedTitles = [];
 
 	/**
-	 * @param array $pagesTitlesMap
+	 * @param array $map
 	 * @return array
 	 */
-	public function execute( array $pagesTitlesMap ): array {
-		foreach ( $pagesTitlesMap as $confluenceKey => $title ) {
+	public function execute( array $map ): array {
+		foreach ( $map as $key => $title ) {
 			$this->generatedTitles[] = $title;
 		}
 		// sort decending. Longest titles have lower index.
@@ -29,8 +29,9 @@ class TitleCompressor {
 		$this->findLongestTitles();
 		$this->compressTitles();
 
+		krsort( $this->compressedTitles );
+
 		return $this->compressedTitles;
-		// TODO: Replace titles in all global buckets
 	}
 
 	/**

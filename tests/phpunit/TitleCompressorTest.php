@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase;
 class TitleCompressorTest extends TestCase {
 
 	/**
-	 * @covers HalloWelt\MediaWiki\Lib\Migration\TitleCompressor::build
+	 * @covers HalloWelt\MediaWiki\Lib\Migration\TitleCompressor::execute
 	 * @return void
 	 */
 	public function testExecute() {
@@ -55,6 +55,11 @@ class TitleCompressorTest extends TestCase {
 					. 'after_analyze_process_by_human_operator but a very very very much longer'
 					. ' subpage title/'
 					. 'because_this_would_take_a_lot_of_time_sometimes',
+			'123456706---no namespace'
+				=> 'A_very_very_very_long_root_page_title_exeeding_255_characters_to_test_title_compression'
+					. '_algorithm_of_mediawiki-lib-migration_TitleCompressor.php_which_should_reduce_manual_title'
+					. '_modification_after_analyze_process_by_human_operator_because_this_would_take_a_lot_of_time'
+					. '_sometimes',
 		];
 	}
 
@@ -145,7 +150,12 @@ class TitleCompressorTest extends TestCase {
 					. 'which_should_reduce_manual_title_modification/'
 					. 'after_analyze_process_by_human_operator but a ver~1/'
 					. 'because_this_would_take_a_lot_of_time_sometimes',
-
+			'A_very_very_very_long_root_page_title_exeeding_255_characters_to_test_title_compression_algorithm'
+			. '_of_mediawiki-lib-migration_TitleCompressor.php_which_should_reduce_manual_title_modification_after'
+			. '_analyze_process_by_human_operator_because_this_would_take_a_lot_of_time_sometimes'
+				=> 'A_very_very_very_long_root_page_title_exeeding_255_characters_to_test_title_compression_'
+					. 'algorithm_of_mediawiki-lib-migration_TitleCompressor.php_which_should_reduce_manual_title'
+					. '_modification_after_analyze_process_by_human_operator_because_this_would_tak~1',
 		];
 	}
 }
