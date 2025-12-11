@@ -45,7 +45,7 @@ class TitleCompressorTest extends TestCase {
 					. 'which_should_reduce_manual_title_modification/'
 					. 'after_analyze_process_by_human_operator but a very very very much longer subpage title/'
 					. 'because_this_would_take_a_lot_of_time_sometimes',
-		];	
+		];
 	}
 
 	private function getExpectedCompressedTitleMap(): array {
