@@ -18,6 +18,21 @@ class ApplyCompressedTitle {
 	 * @param array $map
 	 * @return array
 	 */
+	public function toMapKeys( array $map ): array {
+		$newMap = [];
+
+		foreach ( $map as $title => $values ) {
+			$newKey = $this->getTitle( $title );
+			$newMap[$newKey] = $values;
+		}
+
+		return $newMap;
+	}
+
+	/**
+	 * @param array $map
+	 * @return array
+	 */
 	public function toMapValues( array $map ): array {
 		$newMap = [];
 

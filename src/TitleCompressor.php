@@ -84,7 +84,10 @@ class TitleCompressor {
 	 */
 	private function compressTitleWith1Segment( array $titleSegments ): void {
 		$rootTitle = array_shift( $titleSegments );
-		$namespaceLength = strpos( $rootTitle, ':' );
+		$namespaceLength = 0;
+		if ( str_contains( $rootTitle, ':' ) ) {
+			$namespaceLength = strpos( $rootTitle, ':' );
+		}
 		$availableLength = 255 + $namespaceLength;
 		$compressedRootTitle = $this->compressTitle( '', $rootTitle, $availableLength );
 
@@ -98,8 +101,11 @@ class TitleCompressor {
 	private function compressTitleWith2SegmentsAndMore( array $titleSegments ): void {
 		$numOfSegments = count( $titleSegments );
 
-		$namespaceLength = strpos( $titleSegments[0], ':' );
-		$namespace = substr( $titleSegments[0], 0, $namespaceLength );
+		$namespaceLength = 0;
+		if ( str_contains( $titleSegments[0], ':' ) ) {
+			$namespaceLength = strpos( $titleSegments[0], ':' );
+		}
+		$namespace = substr( $titleSegments[0], 0, $namespaceLength + 1 );
 		$titleSegments[0] = substr( $titleSegments[0], $namespaceLength + 1 );
 
 		$availableLength = 255;
@@ -109,12 +115,12 @@ class TitleCompressor {
 		$availableLength = 255 - strlen( $allowedLeafPageLength );
 		$allowedRootLenght = (int)( $availableLength / $numOfSegments );
 		$rootTitle = array_shift( $titleSegments );
-		$rootTitle = "{$namespace}:{$rootTitle}";
+		$rootTitle = "{$namespace}{$rootTitle}";
 
 		if ( strlen( $rootTitle ) > $allowedRootLenght ) {
 			// Compress $rootTitle
 			$compressedRootTitle = $this->compressTitle(
-				'', $rootTitle, $allowedRootLenght + strlen( "{$namespace}:" )
+				'', $rootTitle, $allowedRootLenght + strlen( $namespace )
 			);
 		} else {
 			$compressedRootTitle = $rootTitle;
@@ -149,9 +155,7 @@ class TitleCompressor {
 				}
 
 				$compressedTitle = $this->compressTitle( $curTitle, $titleSegment, $segmentLength );
-				if ( $titleKey !== $compressedTitle ) {
-					$this->compressedTitles[$titleKey] = $compressedTitle;
-				}
+				$this->compressedTitles[$titleKey] = $compressedTitle;
 				$curTitle .= "/{$titleSegment}";
 			}
 
