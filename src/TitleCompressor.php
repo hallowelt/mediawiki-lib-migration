@@ -9,9 +9,9 @@ use Exception;
  */
 class TitleCompressor {
 
-	private $generatedTitles = [];
+	private $maxChars = 255;
 
-	private $longestTitles = [];
+	private $input = [];
 
 	private $compressedTitles = [];
 
@@ -19,179 +19,96 @@ class TitleCompressor {
 	 * @param array $map
 	 * @return array
 	 */
-	public function execute( array $map ): array {
+	public function execute( array $map, int $maxChars = 255 ): array {
+		$this->maxChars = $maxChars;
+
 		foreach ( $map as $key => $title ) {
-			$this->generatedTitles[] = $title;
+			$this->input[] = $title;
 		}
 		// sort decending. Longest titles have lower index.
-		rsort( $this->generatedTitles );
 
-		$this->findLongestTitles();
 		$this->compressTitles();
+		$compressedMap = $this->makeTitleMap();
+		#file_put_contents( '/datadisk/workspace/migrate-confluence/debug-compressed-titles-2.log', var_export( $this->compressedTitles, true ) );
 
-		krsort( $this->compressedTitles );
-
-		return $this->compressedTitles;
+		return $compressedMap;
 	}
 
-	/**
-	 * @return void
-	 */
-	private function findLongestTitles(): void {
-		$curLongestTitle = '';
-		foreach ( $this->generatedTitles as $title ) {
-			if ( $curLongestTitle === '' ) {
-				// initial title
-				$curLongestTitle = $title;
-				continue;
-			}
+	private function makeTitleMap(): array {
+		$map = [];
+		foreach ( $this->input as $originalTitle ) {
+			$searchTitle = '';
+			$newTitle = '';
+			$segments = explode( '/', $originalTitle );
 
-			if ( substr( $curLongestTitle, 0, strlen( $title ) ) === $title ) {
-				continue;
-			}
-
-			$this->longestTitles[] = $curLongestTitle;
-			$curLongestTitle = $title;
-		}
-		$this->longestTitles[] = $curLongestTitle;
-	}
-
-	/**
-	 * @return void
-	 */
-	private function compressTitles(): void {
-		for ( $index = 0; $index < count( $this->longestTitles ); $index++ ) {
-			$title = $this->longestTitles[$index];
-			$titleSegments = explode( '/', trim( $title, "/_ " ) );
-
-			$numOfSegments = count( $titleSegments );
-			if ( $numOfSegments < 1 ) {
-				continue;
-			} elseif ( $numOfSegments > 1 ) {
-				// Title has title segments between root an leaf part or
-				// Title has root an leaf part only
-				$this->compressTitleWith2SegmentsAndMore( $titleSegments );
-			} else {
-				// Title has root part only
-				$this->compressTitleWith1Segment( $titleSegments );
-			}
-		}
-	}
-
-	/**
-	 * @param array $titleSegments
-	 * @return void
-	 */
-	private function compressTitleWith1Segment( array $titleSegments ): void {
-		$rootTitle = array_shift( $titleSegments );
-		$namespaceLength = 0;
-		if ( str_contains( $rootTitle, ':' ) ) {
-			$namespaceLength = strpos( $rootTitle, ':' );
-		}
-		$availableLength = 255 + $namespaceLength;
-		$compressedRootTitle = $this->compressTitle( '', $rootTitle, $availableLength );
-
-		$this->compressedTitles[$rootTitle] = $compressedRootTitle;
-	}
-
-	/**
-	 * @param array $titleSegments
-	 * @return void
-	 */
-	private function compressTitleWith2SegmentsAndMore( array $titleSegments ): void {
-		$numOfSegments = count( $titleSegments );
-
-		$namespaceLength = 0;
-		if ( str_contains( $titleSegments[0], ':' ) ) {
-			$namespaceLength = strpos( $titleSegments[0], ':' );
-		}
-		$namespace = substr( $titleSegments[0], 0, $namespaceLength + 1 );
-		$titleSegments[0] = substr( $titleSegments[0], $namespaceLength + 1 );
-
-		$availableLength = 255;
-		$allowedLeafPageLength = (int)( $availableLength / $numOfSegments );
-		$leafPageTitle = array_pop( $titleSegments );
-
-		$availableLength = 255 - strlen( $allowedLeafPageLength );
-		$allowedRootLenght = (int)( $availableLength / $numOfSegments );
-		$rootTitle = array_shift( $titleSegments );
-		$rootTitle = "{$namespace}{$rootTitle}";
-
-		if ( strlen( $rootTitle ) > $allowedRootLenght ) {
-			// Compress $rootTitle
-			$compressedRootTitle = $this->compressTitle(
-				'', $rootTitle, $allowedRootLenght + strlen( $namespace )
-			);
-		} else {
-			$compressedRootTitle = $rootTitle;
-		}
-
-		if ( strlen( $leafPageTitle ) > $allowedLeafPageLength ) {
-			// Compress $leafPageTitle
-			$compressedLeafPageTitle = $this->compressTitle( '', $leafPageTitle, $allowedLeafPageLength );
-		} else {
-			$compressedLeafPageTitle = $leafPageTitle;
-		}
-
-		$numOfSegments = count( $titleSegments );
-		if ( $numOfSegments > 1 ) {
-			// Avoid "division by zero"
-			$availableLength = 255 - strlen( $compressedRootTitle ) - strlen( $compressedLeafPageTitle );
-			$segmentLength = (int)( $availableLength / $numOfSegments );
-
-			$curTitle = $rootTitle;
-			$this->compressedTitles[$rootTitle] = $compressedRootTitle;
-			$compressedTitle = '';
-			foreach ( $titleSegments as $titleSegment ) {
-				$titleKey = "{$curTitle}";
-				if ( $titleKey === '' ) {
-					$titleKey = $titleSegment;
+			foreach ( $segments as $segment ) {
+				if ( $newTitle !== '' ) {
+					$newTitle .= '/';
+				}
+				if ( $searchTitle !== '' ) {
+					$searchTitle .= '/';
+				}
+				$searchTitle .= $segment;
+				if ( isset( $this->compressedTitles[$searchTitle] ) ) {
+					$newTitle .= $this->compressedTitles[$searchTitle];
 				} else {
-					$titleKey .= "/{$titleSegment}";
-				}
-				if ( isset( $this->compressedTitles[$titleKey] ) ) {
-					$curTitle = $titleKey;
-					continue;
-				}
-
-				$compressedTitle = $this->compressTitle( $curTitle, $titleSegment, $segmentLength );
-				$this->compressedTitles[$titleKey] = $compressedTitle;
-				$curTitle .= "/{$titleSegment}";
-			}
-
-			// Apend $leafPageTitle
-			if ( $leafPageTitle !== '' ) {
-				$curTitle .= "/{$leafPageTitle}";
-				$compressedTitle .= "/{$compressedLeafPageTitle}";
-				if ( $curTitle !== $compressedTitle ) {
-					$this->compressedTitles[$curTitle] = $compressedTitle;
+					$newTitle .= $searchTitle;
 				}
 			}
-		} else {
-			$curTitle = $rootTitle;
-			$this->compressedTitles[$curTitle] = $compressedRootTitle;
-			$curTitle = "{$rootTitle}/{$leafPageTitle}";
-			$this->compressedTitles[$curTitle] = "{$compressedRootTitle}/{$compressedLeafPageTitle}";
+			$map[$originalTitle] = $newTitle;
+		}
+		return $map;
+	}
+
+
+	private function compressTitles() {
+		for ( $index = 0; $index < count( $this->input ); $index++ ) {
+			$title = $this->input[$index];
+			$namespace = '';
+			if ( str_contains( $title, ':' ) ) {
+				$namespace = substr( $title, 0, strpos( $title, ':' ) + 1 );
+				$title = substr( $title, strpos( $title, ':' ) + 1 );
+			}
+
+			$segments = explode( '/', $title );
+			$numOfSegments = count( $segments );
+
+			$numOfSlashes = $numOfSegments - 1;
+			$segmentLength = (int)( ( $this->maxChars - $numOfSlashes ) / $numOfSegments );
+
+			$curTitle = '';
+			$curCompressedTitle = '';
+			foreach ( $segments as $segment ) {
+				if ( $curTitle === '' ) {
+					$curTitle = "{$namespace}{$segment}";
+				} else {
+					$curTitle .=  "/{$segment}";
+				}
+
+				if ( strlen( $segment ) > $segmentLength ) {
+					$segment = $this->compressTitle( $curTitle, $segment, $segmentLength );
+				}
+
+				if ( $curCompressedTitle === '' ) {
+					$curCompressedTitle = "{$namespace}{$segment}";
+					$segment = "{$namespace}{$segment}";
+				} else {
+					$curCompressedTitle .=  "/{$segment}";
+				}
+
+				$this->compressedTitles[$curTitle] = $segment;
+			}
+
 		}
 	}
 
+
 	/**
-	 * @param string $curTitle
 	 * @param string $titleSegment
 	 * @param int $segmentLength
 	 * @return string
 	 */
 	private function compressTitle( string $curTitle, string $titleSegment, int $segmentLength ): string {
-		$compressedCurTitle = '';
-		if ( isset( $this->compressedTitles[$curTitle] ) ) {
-			$compressedCurTitle = $this->compressedTitles[$curTitle];
-		}
-
-		if ( $compressedCurTitle !== '' ) {
-			$compressedCurTitle .= "/";
-		}
-
-		$compressedTitle = '';
 		$titleCounter = 0;
 		$kill = 0;
 		do {
@@ -201,7 +118,7 @@ class TitleCompressor {
 			// Segment length < $segmentLength => don't compress segment
 			// Segment length > $segmentLength => compress segment
 			if ( strlen( $titleSegment ) <= $segmentLength ) {
-				$compressedTitle = "{$compressedCurTitle}{$titleSegment}";
+				$compressedTitleSegment = "{$titleSegment}";
 				break;
 			} else {
 				$counter = "~" . (string)$titleCounter;
@@ -210,14 +127,37 @@ class TitleCompressor {
 				$compressedTitleSegment = substr( $titleSegment, 0, $segmentLength - $counterLength );
 				$compressedTitleSegment .= $counter;
 
-				$compressedTitle = "{$compressedCurTitle}{$compressedTitleSegment}";
+				$nextRound = false;
+				foreach ( $this->compressedTitles as $key => $existingTitle ) {
+					if ( substr_count( $key, '/' ) !== substr_count( $curTitle, '/' ) ) {
+						// different subpage level
+						continue;
+					}
+					if ( substr( $key, 0, strrpos( $key, '/' ) ) !== substr( $curTitle, 0, strrpos( $curTitle, '/' ) ) ) {
+						// different page root
+						continue;
+					} else if ( substr( $key, strrpos( $key, '/' ) ) !== substr( $curTitle, strrpos( $curTitle, '/' ) ) ) {
+						// same subpage level but different subpagename
+						// collision alert!
+						if ( $existingTitle === $compressedTitleSegment ) {
+							$nextRound = true;
+							break;
+						}
+					} else {
+						// same subpage level, same subage name
+						if ( strlen( $existingTitle ) <= strlen( $compressedTitleSegment ) ) {
+							$compressedTitleSegment = $existingTitle;
+							break;
+						}
+					}
+				}
 			}
-		} while ( $kill <= 1000 && in_array( $compressedTitle, $this->compressedTitles ) );
+		} while ( $kill <= 1000 && $nextRound );
 
 		if ( $kill > 1000 ) {
 			throw new Exception( 'To many loopls in TitleCompressor.' );
 		}
 
-		return $compressedTitle;
+		return $compressedTitleSegment;
 	}
 }
