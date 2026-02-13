@@ -14,64 +14,74 @@ class ApplyCompressedTitleTest extends TestCase {
 	public function testToMapValue() {
 		$apply = new ApplyCompressedTitle( $this->getCompressedTitlesMap() );
 
-		$actualPagesTitlesMap = $apply->toMapValues( $this->getPagesTitlesMap() );
+		// pages-titles
+		$pagesTitles = $this->getPagesTitlesMap();
+		$actualPagesTitlesMap = $apply->toMapValues( $pagesTitles );
 
 		$this->assertEquals(
 			$this->getExpectedPagesTitlesMap(),
 			$actualPagesTitlesMap
 		);
+
+		// title-revisions
+		$titleRevisons = $this->getTitleRevisionsMap();
+		$actualTitleRevisionsMap = $apply->toMapKeys( $titleRevisons );
+
+		$this->assertEquals(
+			$this->getExpectedTitleRevisionsMap(),
+			$actualTitleRevisionsMap
+		);
+
 	}
 
 	private function getPagesTitlesMap(): array {
 		return [
 			'123456701---aaa'
-				=> 'ABC:aaa',
+				=> 'ABC:Lorem/ipsum/dolor',
 			'123456702---bbb'
-				=> 'ABC:aaa/bbb',
-			'123456703---ccc'
-				=> 'ABC:aaa/bbb/ccc',
-			'123456704---ccc'
-				=> 'ABC:aaa/bbb-2/ccc',
-			'123456705---ddd'
-				=> 'ABC:aaa/bbb-2/ccc/ddd',
-			'123456706---eee'
-				=> 'ABC:aaa/bbb-2/ccc/eee',
-			'123456707---eee'
-				=> 'ABC:aaa/bb/ccc/eee',
+				=> 'ABC:Lorem/ipsum/dolor-2/sit',
+		];
+	}
+
+	private function getTitleRevisionsMap(): array {
+		return [
+			'ABC:Lorem/ipsum/dolor'
+				=> [ 'abc-def-1', 'abc-def-2' ],
+			'ABC:Lorem/ipsum/dolor-2/sit'
+				=> [ 'abc-def-3', 'abc-def-4' ],
 		];
 	}
 
 	private function getCompressedTitlesMap(): array {
 		return [
-			'ABC:aaa'
-				=> 'ABC:aaa',
-			'ABC:aaa/bbb'
-				=> 'ABC:aaa/bb~1',
-			'ABC:aaa/bbb/ccc'
-				=> 'ABC:aaa/bb~1/ccc',
-			'ABC:aaa/bbb-2'
-				=> 'ABC:aaa/bb~2',
-			'ABC:aaa/bbb-2/ccc'
-				=> 'ABC:aaa/bb~2/ccc',
+			'ABC:Lorem'
+				=> 'ABC:Lor~1',
+			'ABC:Lorem/ipsum'
+				=> 'ABC:Lor~1/ips~1',
+			'ABC:Lorem/ipsum/dolor'
+				=> 'ABC:Lor~1/ips~1/dol~1',
+			'ABC:Lorem/ipsum/dolor-2'
+				=> 'ABC:Lor~1/ips~1/dol~2',
+			'ABC:Lorem/ipsum/dolor-2/sit'
+				=> 'ABC:Lor~1/ips~1/dol~2/sit'
 		];
 	}
 
 	private function getExpectedPagesTitlesMap(): array {
 		return [
 			'123456701---aaa'
-				=> 'ABC:aaa',
+				=> 'ABC:Lor~1/ips~1/dol~1',
 			'123456702---bbb'
-				=> 'ABC:aaa/bb~1',
-			'123456703---ccc'
-				=> 'ABC:aaa/bb~1/ccc',
-			'123456704---ccc'
-				=> 'ABC:aaa/bb~2/ccc',
-			'123456705---ddd'
-				=> 'ABC:aaa/bb~2/ccc/ddd',
-			'123456706---eee'
-				=> 'ABC:aaa/bb~2/ccc/eee',
-			'123456707---eee'
-				=> 'ABC:aaa/bb/ccc/eee',
+				=> 'ABC:Lor~1/ips~1/dol~2/sit',
+		];
+	}
+
+	private function getExpectedTitleRevisionsMap(): array {
+		return [
+			'ABC:Lor~1/ips~1/dol~1'
+				=> [ 'abc-def-1', 'abc-def-2' ],
+			'ABC:Lor~1/ips~1/dol~2/sit'
+				=> [ 'abc-def-3', 'abc-def-4' ],
 		];
 	}
 }

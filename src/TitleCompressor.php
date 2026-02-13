@@ -26,10 +26,11 @@ class TitleCompressor {
 			$this->input[] = $title;
 		}
 		// sort decending. Longest titles have lower index.
+		natcasesort( $this->input );
+		$this->input = array_reverse( $this->input );
 
 		$this->compressTitles();
 		$compressedMap = $this->makeTitleMap();
-		#file_put_contents( '/datadisk/workspace/migrate-confluence/debug-compressed-titles-2.log', var_export( $this->compressedTitles, true ) );
 
 		return $compressedMap;
 	}
@@ -54,8 +55,8 @@ class TitleCompressor {
 				} else {
 					$newTitle .= $searchTitle;
 				}
+				$map[$searchTitle] = $newTitle;
 			}
-			$map[$originalTitle] = $newTitle;
 		}
 		return $map;
 	}
