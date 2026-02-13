@@ -31,7 +31,6 @@ class ApplyCompressedTitleTest extends TestCase {
 			$this->getExpectedTitleRevisionsMap(),
 			$actualTitleRevisionsMap
 		);
-
 	}
 
 	private function getPagesTitlesMap(): array {

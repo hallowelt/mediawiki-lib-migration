@@ -17,6 +17,7 @@ class TitleCompressor {
 
 	/**
 	 * @param array $map
+	 * @param integer $maxChars
 	 * @return array
 	 */
 	public function execute( array $map, int $maxChars = 255 ): array {
@@ -61,7 +62,6 @@ class TitleCompressor {
 		return $map;
 	}
 
-
 	private function compressTitles() {
 		for ( $index = 0; $index < count( $this->input ); $index++ ) {
 			$title = $this->input[$index];
@@ -83,7 +83,7 @@ class TitleCompressor {
 				if ( $curTitle === '' ) {
 					$curTitle = "{$namespace}{$segment}";
 				} else {
-					$curTitle .=  "/{$segment}";
+					$curTitle .= "/{$segment}";
 				}
 
 				if ( strlen( $segment ) > $segmentLength ) {
@@ -94,19 +94,18 @@ class TitleCompressor {
 					$curCompressedTitle = "{$namespace}{$segment}";
 					$segment = "{$namespace}{$segment}";
 				} else {
-					$curCompressedTitle .=  "/{$segment}";
+					$curCompressedTitle .= "/{$segment}";
 				}
 
 				$this->compressedTitles[$curTitle] = $segment;
 			}
-
 		}
 	}
 
-
 	/**
+	 * @param string $curTitle
 	 * @param string $titleSegment
-	 * @param int $segmentLength
+	 * @param integer $segmentLength
 	 * @return string
 	 */
 	private function compressTitle( string $curTitle, string $titleSegment, int $segmentLength ): string {
@@ -134,10 +133,14 @@ class TitleCompressor {
 						// different subpage level
 						continue;
 					}
-					if ( substr( $key, 0, strrpos( $key, '/' ) ) !== substr( $curTitle, 0, strrpos( $curTitle, '/' ) ) ) {
+					if (
+						substr( $key, 0, strrpos( $key, '/' ) ) !== substr( $curTitle, 0, strrpos( $curTitle, '/' ) )
+					) {
 						// different page root
 						continue;
-					} else if ( substr( $key, strrpos( $key, '/' ) ) !== substr( $curTitle, strrpos( $curTitle, '/' ) ) ) {
+					} elseif (
+						substr( $key, strrpos( $key, '/' ) ) !== substr( $curTitle, strrpos( $curTitle, '/' ) )
+					) {
 						// same subpage level but different subpagename
 						// collision alert!
 						if ( $existingTitle === $compressedTitleSegment ) {

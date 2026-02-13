@@ -22,6 +22,10 @@ class TitleCompressorTest extends TestCase {
 			$compressedTitles
 		);
 	}
+
+	/**
+	 * @return array
+	 */
 	private function getPagesTitlesMap(): array {
 		return [
 			'123456701---la'
@@ -41,6 +45,9 @@ class TitleCompressorTest extends TestCase {
 		];
 	}
 
+	/**
+	 * @return array
+	 */
 	private function getExpectedCompressedTitleMap(): array {
 		return [
 			'ABC:1234567890' => 'ABC:123~1',

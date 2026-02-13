@@ -3,13 +3,16 @@
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
 /**
- * 
+ *
  */
 class ApplyCompressedTitle {
 
 	/** @var array */
 	private $compressedTitleMap = [];
 
+	/**
+	 * @param array $compressedTitleMap
+	 */
 	public function __construct( array $compressedTitleMap ) {
 		$this->compressedTitleMap = $compressedTitleMap;
 	}
