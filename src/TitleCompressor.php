@@ -17,7 +17,7 @@ class TitleCompressor {
 
 	/**
 	 * @param array $map
-	 * @param integer $maxChars
+	 * @param int $maxChars
 	 * @return array
 	 */
 	public function execute( array $map, int $maxChars = 255 ): array {
@@ -105,7 +105,7 @@ class TitleCompressor {
 	/**
 	 * @param string $curTitle
 	 * @param string $titleSegment
-	 * @param integer $segmentLength
+	 * @param int $segmentLength
 	 * @return string
 	 */
 	private function compressTitle( string $curTitle, string $titleSegment, int $segmentLength ): string {
