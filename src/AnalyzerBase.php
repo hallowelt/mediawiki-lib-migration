@@ -49,7 +49,7 @@ abstract class AnalyzerBase implements IAnalyzer {
 	 * @param DataBuckets $buckets
 	 * @return IAnalyzer
 	 */
-	public static function factory( $config, Workspace $workspace, DataBuckets $buckets ) : IAnalyzer {
+	public static function factory( $config, Workspace $workspace, DataBuckets $buckets ): IAnalyzer {
 		return new static( $config, $workspace, $buckets );
 	}
 

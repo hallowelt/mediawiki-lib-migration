@@ -9,5 +9,5 @@ interface IMetadataProvider {
 	 * steps "Analyze" or "Extract". Steps "Convert" or "Compile" will are responsible to evaluate
 	 * this data
 	 */
-	public function getMetaData() : array;
+	public function getMetaData(): array;
 }

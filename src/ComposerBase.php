@@ -41,7 +41,7 @@ abstract class ComposerBase implements IComposer {
 	 * @param DataBuckets $buckets
 	 * @return IComposer
 	 */
-	public static function factory( $config, Workspace $workspace, DataBuckets $buckets ) : IComposer {
+	public static function factory( $config, Workspace $workspace, DataBuckets $buckets ): IComposer {
 		return new static( $config, $workspace, $buckets );
 	}
 }

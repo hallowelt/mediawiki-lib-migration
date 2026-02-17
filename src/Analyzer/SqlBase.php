@@ -51,7 +51,7 @@ abstract class SqlBase extends AnalyzerBase {
 			throw new \Exception( "Cannot retrieve content of table \"$table\"" );
 		}
 
-		//phpcs:ignore MediaWiki.ControlStructures.AssignmentInControlStructures.AssignmentInControlStructures
+		//phpcs:ignore Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition
 		while ( $row = $res->fetch_assoc() ) {
 			if ( !$this->analyzeRow( $row, $table ) ) {
 				return false;

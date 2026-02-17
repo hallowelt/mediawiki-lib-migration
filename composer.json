@@ -10,15 +10,15 @@
 		}
 	],
 	"require": {
-		"symfony/console": "v3.4.9"
+		"symfony/console": "^7.2"
 	},
 	"require-dev": {
-		"mediawiki/mediawiki-codesniffer": "31.0.0",
-		"mediawiki/mediawiki-phan-config": "0.11.0",
-		"mediawiki/minus-x": "1.1.1",
-		"jakub-onderka/php-parallel-lint": "1.0.0",
-		"jakub-onderka/php-console-highlighter": "0.4.0",
-		"phpunit/phpunit": "^8"
+		"mediawiki/mediawiki-codesniffer": "^45.0",
+		"mediawiki/mediawiki-phan-config": "^0.14",
+		"mediawiki/minus-x": "^1.1",
+		"php-parallel-lint/php-parallel-lint": "^1.4",
+		"php-parallel-lint/php-console-highlighter": "^1.0",
+		"phpunit/phpunit": "^9.5"
 	},
 	"autoload": {
 		"psr-4": {
@@ -42,5 +42,10 @@
 		"lint": [
 			"phan --no-progress-bar -m text | sed 's, ,:,'"
 		]
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
 	}
 }

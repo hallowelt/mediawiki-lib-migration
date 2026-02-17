@@ -9,10 +9,13 @@ use Exception;
  */
 class TitleCompressor {
 
+	/** @var int */
 	private $maxChars = 255;
 
+	/** @var string[] */
 	private $input = [];
 
+	/** @var string[] */
 	private $compressedTitles = [];
 
 	/**
