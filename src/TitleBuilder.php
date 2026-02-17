@@ -61,37 +61,37 @@ class TitleBuilder {
 	 */
 	public function __construct( array $namespaceMap ) {
 		$this->namespaceMap = [
-			static::NS_MEDIA => 'Media',
-			static::NS_SPECIAL => 'Special',
+			static::NS_MEDIA => 'Media:',
+			static::NS_SPECIAL => 'Special:',
 
 			static::NS_MAIN => '',
-			static::NS_TALK => 'Talk',
-			static::NS_USER => 'User',
-			static::NS_USER_TALK => 'User_talk',
-			static::NS_PROJECT => 'Project',
-			static::NS_PROJECT_TALK => 'Project_talk',
-			static::NS_FILE => 'File',
-			static::NS_FILE_TALK => 'File_talk',
-			static::NS_MEDIAWIKI => 'MediaWiki',
-			static::NS_MEDIAWIKI_TALK => 'MediaWiki_talk',
-			static::NS_TEMPLATE => 'Template',
-			static::NS_TEMPLATE_TALK => 'Template_talk',
-			static::NS_HELP => 'Help',
-			static::NS_HELP_TALK => 'Help_talk',
-			static::NS_CATEGORY => 'Category',
-			static::NS_CATEGORY_TALK => 'Category_talk',
+			static::NS_TALK => 'Talk:',
+			static::NS_USER => 'User:',
+			static::NS_USER_TALK => 'User_talk:',
+			static::NS_PROJECT => 'Project:',
+			static::NS_PROJECT_TALK => 'Project_talk:',
+			static::NS_FILE => 'File:',
+			static::NS_FILE_TALK => 'File_talk:',
+			static::NS_MEDIAWIKI => 'MediaWiki:',
+			static::NS_MEDIAWIKI_TALK => 'MediaWiki_talk:',
+			static::NS_TEMPLATE => 'Template:',
+			static::NS_TEMPLATE_TALK => 'Template_talk:',
+			static::NS_HELP => 'Help:',
+			static::NS_HELP_TALK => 'Help_talk:',
+			static::NS_CATEGORY => 'Category:',
+			static::NS_CATEGORY_TALK => 'Category_talk:',
 
-			static::NS_FORM => 'Form',
-			static::NS_FORM_TALK => 'Form_talk',
+			static::NS_FORM => 'Form:',
+			static::NS_FORM_TALK => 'Form_talk:',
 
-			static::NS_PROPERTY => 'Property',
-			static::NS_PROPERTY_TALK => 'Property_talk',
+			static::NS_PROPERTY => 'Property:',
+			static::NS_PROPERTY_TALK => 'Property_talk:',
 
-			static::NS_MODULE => 'Module',
-			static::NS_MODULE_TALK => 'Module_talk',
+			static::NS_MODULE => 'Module:',
+			static::NS_MODULE_TALK => 'Module_talk:',
 
-			static::NS_BOOK => 'Book',
-			static::NS_BOOK_TALK => 'Book_talk'
+			static::NS_BOOK => 'Book:',
+			static::NS_BOOK_TALK => 'Book_talk:'
 		];
 
 		$this->namespaceMap = $this->namespaceMap + $namespaceMap;
@@ -150,7 +150,8 @@ class TitleBuilder {
 	public function build(): string {
 		$prefix = '';
 		if ( !empty( $this->namespacePrefix ) ) {
-			$prefix = $this->namespacePrefix . ':';
+			$prefix = $this->namespacePrefix;
+
 		}
 		if ( empty( $this->titleSegments ) ) {
 			throw new InvalidTitleException( '', "No title segments set" );
@@ -159,14 +160,16 @@ class TitleBuilder {
 		$titleText = implode( '/', $this->titleSegments );
 		$titleText = trim( $titleText, " \t\n\r\0\x0B/" );
 
-		if ( mb_strlen( $titleText ) > 255 ) {
+		$title = $prefix . $titleText;
+
+		if ( strlen( $titleText ) > 255 ) {
 			throw new InvalidTitleException(
-				$titleText,
-				"Title '$titleText' exceeds maximum length of 255 chars!"
+				$title,
+				"Title '$title' exceeds maximum length of 255 chars!"
 			);
 		}
 
-		return $prefix . $titleText;
+		return $title;
 	}
 
 	/**

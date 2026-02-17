@@ -10,6 +10,7 @@ use HalloWelt\MediaWiki\Lib\Migration\IComposer;
 use HalloWelt\MediaWiki\Lib\Migration\IOutputAwareInterface;
 use HalloWelt\MediaWiki\Lib\Migration\Workspace;
 use SplFileInfo;
+use Symfony\Component\Console\Command\Command;
 
 class Compose extends CliCommandBase {
 	protected function configure() {
@@ -21,16 +22,27 @@ class Compose extends CliCommandBase {
 		return [];
 	}
 
-	protected function processFiles(): int {
-		$this->ensureTargetDirs();
-		$this->workspace = new Workspace( new SplFileInfo( $this->src ) );
-		$this->buckets = new DataBuckets( [
+	/**
+	 *
+	 * @return array
+	 */
+	protected function getBucketKeys() {
+		return [
 			'files',
 			'revision-contents',
 			'title-attachments',
 			'title-metadata',
 			'title-revisions',
-		] );
+		];
+	}
+
+	protected function processFiles(): int {
+		$this->ensureTargetDirs();
+		$this->workspace = new Workspace( new SplFileInfo( $this->src ) );
+
+		$this->initExecutionTime();
+
+		$this->buckets = new DataBuckets( $this->getBucketKeys() );
 		$this->buckets->loadFromWorkspace( $this->workspace );
 		$composers = $this->makeComposers();
 		$mediawikixmlbuilder = new Builder();
@@ -39,7 +51,9 @@ class Compose extends CliCommandBase {
 		}
 		$mediawikixmlbuilder->buildAndSave( $this->dest . '/result/output.xml' );
 
-		return 0;
+		$this->logExecutionTime();
+
+		return Command::SUCCESS;
 	}
 
 	/**

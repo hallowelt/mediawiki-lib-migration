@@ -1,0 +1,68 @@
+<?php
+
+namespace HalloWelt\MediaWiki\Lib\Migration;
+
+/**
+ *
+ */
+class ApplyCompressedTitle {
+
+	/** @var array */
+	private $compressedTitleMap = [];
+
+	/**
+	 * @param array $compressedTitleMap
+	 */
+	public function __construct( array $compressedTitleMap ) {
+		$this->compressedTitleMap = $compressedTitleMap;
+	}
+
+	/**
+	 * @param array $map
+	 * @return array
+	 */
+	public function toMapKeys( array $map ): array {
+		$newMap = [];
+
+		foreach ( $map as $key => $values ) {
+			$newKey = $this->getTitle( $key );
+			$newMap[$newKey] = $values;
+		}
+
+		return $newMap;
+	}
+
+	/**
+	 * @param array $map
+	 * @return array
+	 */
+	public function toMapValues( array $map ): array {
+		$newMap = [];
+
+		foreach ( $map as $key => $value ) {
+			$newMap[$key] = $this->getTitle( $value );
+		}
+
+		return $newMap;
+	}
+
+	/**
+	 * @param string $title
+	 * @return string
+	 */
+	private function getTitle( string $title ): string {
+		$segments = explode( '/', $title );
+		$numOfSegments = count( $segments );
+		$tail = '';
+		for ( $index = 0; $index < $numOfSegments; $index++ ) {
+			$test = implode( '/', $segments );
+			if ( isset( $this->compressedTitleMap[$test] ) ) {
+				return $this->compressedTitleMap[$test] . $tail;
+			}
+			$lastSegment = array_pop( $segments );
+			$tail = "/{$lastSegment}{$tail}";
+		}
+		return $title;
+	}
+
+}
