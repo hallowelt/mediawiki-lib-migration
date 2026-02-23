@@ -46,7 +46,7 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 		$this->config = $config;
 	}
 
-	protected function processFiles() {
+	protected function processFiles(): int {
 		$this->beforeProcessFiles();
 		$this->runBeforeProcessFilesEventHandlers();
 		$returnValue = parent::processFiles();
@@ -124,7 +124,7 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	}
 
 	/**
-	 * @return boolean
+	 * @return bool
 	 */
 	abstract protected function doProcessFile(): bool;
 

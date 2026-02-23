@@ -12,6 +12,8 @@ class WindowsFilename {
 	 *
 	 * Slashes and backslashes are disallowed regardless of this setting, but included here for
 	 * completeness.
+	 *
+	 * @var string
 	 */
 	protected $wgIllegalFileChars = ":\\/\\\\";
 
@@ -40,11 +42,19 @@ class WindowsFilename {
 	 * because articles can be created such that they are hard to view or edit.
 	 *
 	 * In some rare cases you may wish to remove + for compatibility with old links.
+	 *
+	 * @var string
 	 */
 	protected $wgLegalTitleChars = " %!\"$&'()*,\\-.\\/0-9:;=?@A-Z\\\\^_`a-z~\\x80-\\xFF+";
 
+	/**
+	 * @var string
+	 */
 	protected $origFilename = '';
 
+	/**
+	 * @var array
+	 */
 	protected $substitutionMap = [
 		'ä' => 'ae',
 		'ö' => 'oe',
