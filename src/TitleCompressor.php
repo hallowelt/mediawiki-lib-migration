@@ -100,7 +100,14 @@ class TitleCompressor {
 					$curCompressedTitle .= "/{$segment}";
 				}
 
-				$this->compressedTitles[$curTitle] = $segment;
+				if ( isset( $this->compressedTitles[$curTitle] ) ) {
+					$curLength = strlen( $this->compressedTitles[$curTitle] );
+					if ( $curLength > $segmentLength ) {
+						$this->compressedTitles[$curTitle] = $segment;
+					}
+				} else {
+					$this->compressedTitles[$curTitle] = $segment;
+				}
 			}
 		}
 	}
