@@ -36,6 +36,8 @@ class TitleBuilder {
 	public const NS_BOOK = 1504;
 	public const NS_BOOK_TALK = 1505;
 
+	public const NS_BLOG = 1502;
+
 	/**
 	 * For migration purposes we always rely on the "canonical" (englisch) namespace prefixes.
 	 * array
@@ -91,7 +93,9 @@ class TitleBuilder {
 			static::NS_MODULE_TALK => 'Module_talk:',
 
 			static::NS_BOOK => 'Book:',
-			static::NS_BOOK_TALK => 'Book_talk:'
+			static::NS_BOOK_TALK => 'Book_talk:',
+
+			static::NS_BLOG => 'Blog:',
 		];
 
 		$this->namespaceMap = $this->namespaceMap + $namespaceMap;
