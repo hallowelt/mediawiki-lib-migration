@@ -189,9 +189,16 @@ class TitleBuilder {
 		$segment = preg_replace( static::getTitleInvalidRegex(), '_', $segment );
 		// Slash is usually a legal char, but not in the segment
 		$segment = preg_replace( '/\\//', '_', $segment );
+		// Remove additional segments that caused issues during tests
+		$segment = str_replace(
+			[ ':', '%', '?', '#', '<', '>', '+', '[', ']', '{', '}', '|', '~', '&' ],
+			'_',
+			$segment
+		);
 		// MediaWiki normalizes multiple spaces/undescores into one single underscore
 		$segment = preg_replace( '#_+#si', '_', $segment );
 		$segment = trim( $segment, " _\t" );
+
 		return trim( $segment );
 	}
 
