@@ -18,7 +18,9 @@ class ExecutionTime {
 	 */
 	public function getHumanReadableTime(): string {
 		$executionTimeEnd = $this->getMicrotime();
-		$executionTime = $executionTimeEnd - $this->executionTimeStart;
+		/* we are not (yet) interested in sub-seconds. The modulo later is
+		 * an integer operation, though, so we need int. */
+		$executionTime = (int)( $executionTimeEnd - $this->executionTimeStart );
 
 		$s = $executionTime % 60;
 		$m = floor( ( $executionTime % 3600 ) / 60 );
