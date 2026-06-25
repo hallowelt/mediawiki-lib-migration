@@ -166,13 +166,6 @@ class TitleBuilder {
 
 		$title = $prefix . $titleText;
 
-		if ( strlen( $titleText ) > 255 ) {
-			throw new InvalidTitleException(
-				$title,
-				"Title '$title' exceeds maximum length of 255 chars!"
-			);
-		}
-
 		return $title;
 	}
 
