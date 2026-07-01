@@ -142,13 +142,6 @@ class WindowsFilename {
 		$newFilename = trim( $newFilename, '_~' );
 		$newFilename = preg_replace( '#_+#', '_', $newFilename );
 
-		if ( mb_strlen( $newFilename ) > 255 ) {
-			throw new InvalidTitleException(
-				$newFilename,
-				"Filename '$newFilename' exceeds maximum length of 255 characters!"
-			);
-		}
-
 		$newFilename = ucfirst( $newFilename );
 
 		return $newFilename;
