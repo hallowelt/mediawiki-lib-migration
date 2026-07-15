@@ -134,7 +134,7 @@ class TitleCompressor {
 				$counter = "~" . (string)$titleCounter;
 				$counterLength = strlen( $counter );
 
-				$compressedTitleSegment = substr( $titleSegment, 0, $segmentLength - $counterLength );
+				$compressedTitleSegment = mb_strcut( $titleSegment, 0, $segmentLength - $counterLength, 'UTF-8' );
 				$compressedTitleSegment .= $counter;
 
 				$nextRound = false;
