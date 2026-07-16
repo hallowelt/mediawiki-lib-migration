@@ -12,9 +12,8 @@ class PandocHTML extends ConverterBase {
 	 */
 	protected function doConvert( SplFileInfo $file ): string {
 		$path = $file->getPathname();
-		$command = "pandoc -f html -t mediawiki $path";
-		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.escapeshellcmd
-		$escapedCommand = escapeshellcmd( $command );
+		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.escapeshellarg
+		$escapedCommand = 'pandoc -f html -t mediawiki ' . escapeshellarg( $path );
 		$result = [];
 		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
 		exec( $escapedCommand, $result );
