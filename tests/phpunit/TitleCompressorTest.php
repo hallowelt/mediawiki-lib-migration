@@ -23,11 +23,12 @@ class TitleCompressorTest extends TestCase {
 		);
 	}
 
+	#[\PHPUnit\Framework\Attributes\DataProvider( 'provideUtf8TitlesAtCutBoundary' )]
+
 	/**
 	 * @covers HalloWelt\MediaWiki\Lib\Migration\TitleCompressor::execute
 	 * @return void
 	 */
-	#[\PHPUnit\Framework\Attributes\DataProvider( 'provideUtf8TitlesAtCutBoundary' )]
 	public function testUtf8ValidityAfterCompression( string $title, string $expectedCompressed ) {
 		$compressor = new TitleCompressor();
 		// maxChars=10 → segmentLength=10; the multibyte char straddles the 8-byte cut point
