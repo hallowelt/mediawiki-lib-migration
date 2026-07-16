@@ -24,6 +24,40 @@ class TitleCompressorTest extends TestCase {
 	}
 
 	/**
+	 * @covers HalloWelt\MediaWiki\Lib\Migration\TitleCompressor::execute
+	 * @return void
+	 */
+	#[\PHPUnit\Framework\Attributes\DataProvider( 'provideUtf8TitlesAtCutBoundary' )]
+	public function testUtf8ValidityAfterCompression( string $title, string $expectedCompressed ) {
+		$compressor = new TitleCompressor();
+		// maxChars=10 → segmentLength=10; the multibyte char straddles the 8-byte cut point
+		$result = $compressor->execute( [ 'key' => $title ], 10 );
+
+		foreach ( $result as $compressed ) {
+			$this->assertTrue(
+				mb_check_encoding( $compressed, 'UTF-8' ),
+				"Compressed title is not valid UTF-8: " . bin2hex( $compressed )
+			);
+		}
+		$this->assertSame( $expectedCompressed, $result[$title] );
+	}
+
+	public static function provideUtf8TitlesAtCutBoundary(): array {
+		return [
+			// ü = 2-byte sequence (C3 BC); starts at byte 7, straddles the byte-8 cut
+			'2-byte char at cut boundary' => [
+				'NS:AAAAAAAüBB',
+				'NS:AAAAAAA~1',
+			],
+			// 中 = 3-byte sequence (E4 B8 AD); starts at byte 7, straddles the byte-8 cut
+			'3-byte char at cut boundary' => [
+				'NS:AAAAAAA中B',
+				'NS:AAAAAAA~1',
+			],
+		];
+	}
+
+	/**
 	 * @return array
 	 */
 	private function getPagesTitlesMap(): array {
