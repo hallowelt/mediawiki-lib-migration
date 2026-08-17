@@ -4,7 +4,7 @@ namespace HalloWelt\MediaWiki\Lib\Migration\Command;
 
 use Exception;
 use HalloWelt\MediaWiki\Lib\MediaWikiXML\Builder;
-use HalloWelt\MediaWiki\Lib\Migration\CliCommandBase;
+use HalloWelt\MediaWiki\Lib\Migration\CliWorkersCommandBase;
 use HalloWelt\MediaWiki\Lib\Migration\IComposer;
 use HalloWelt\MediaWiki\Lib\Migration\IOutputAwareInterface;
 use HalloWelt\MediaWiki\Lib\Migration\Workspace;
@@ -12,15 +12,17 @@ use SplFileInfo;
 use Symfony\Component\Console\Command\Command;
 
 /**
- * Composes migration output by running configured composer callbacks.
+ * Worker-aware base command for compose workflows.
  */
-class Compose extends CliCommandBase {
+abstract class ComposeWorkers extends CliWorkersCommandBase {
 
 	/**
+	 * Holds initialized composers indexed by configuration key.
+	 *
 	 * @var IComposer[]
 	 */
 	protected $composers = [];
-	
+
 	/**
 	 * Returns the name of the command.
 	 *
@@ -88,7 +90,7 @@ class Compose extends CliCommandBase {
 			);
 			if ( $composer instanceof IComposer === false ) {
 				throw new Exception(
-					"Factory callback for composer '$key' did not return an "
+					"Factory callback for analyzer '$key' did not return an "
 					. "IComposer object"
 				);
 			}

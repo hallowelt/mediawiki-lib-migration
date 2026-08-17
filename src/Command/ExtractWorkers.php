@@ -3,15 +3,15 @@
 namespace HalloWelt\MediaWiki\Lib\Migration\Command;
 
 use Exception;
-use HalloWelt\MediaWiki\Lib\Migration\CliCommandBase;
+use HalloWelt\MediaWiki\Lib\Migration\CliWorkersCommandBase;
 use HalloWelt\MediaWiki\Lib\Migration\IExtractor;
 use HalloWelt\MediaWiki\Lib\Migration\IFileProcessorEventHandler;
 use HalloWelt\MediaWiki\Lib\Migration\IOutputAwareInterface;
 
 /**
- * Runs extractor callbacks over source input and dispatches extractor events.
+ * Worker-aware base command for extraction workflows.
  */
-class Extract extends CliCommandBase {
+abstract class ExtractWorkers extends CliWorkersCommandBase {
 
 	/**
 	 * Holds initialized extractors indexed by configuration key.
@@ -21,13 +21,12 @@ class Extract extends CliCommandBase {
 	protected $extractors = [];
 
 	/**
-	 * Registers the extract command name and keeps base command options.
+	 * Returns the name of the command.
 	 *
-	 * @return void
+	 * @return string
 	 */
-	protected function configure() {
-		$this->setName( 'extract' );
-		return parent::configure();
+	public function getName(): string {
+		return 'extract';
 	}
 
 	/**
