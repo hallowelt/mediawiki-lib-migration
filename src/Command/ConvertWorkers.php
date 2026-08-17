@@ -3,14 +3,14 @@
 namespace HalloWelt\MediaWiki\Lib\Migration\Command;
 
 use Exception;
-use HalloWelt\MediaWiki\Lib\Migration\CliCommandBase;
+use HalloWelt\MediaWiki\Lib\Migration\CliWorkersCommandBase;
 use HalloWelt\MediaWiki\Lib\Migration\IConverter;
 use HalloWelt\MediaWiki\Lib\Migration\IOutputAwareInterface;
 
 /**
- * Converts raw source files into target wiki text files.
+ * Worker-aware base command for file conversion workflows.
  */
-class Convert extends CliCommandBase {
+abstract class ConvertWorkers extends CliWorkersCommandBase {
 
 	/**
 	 * Stores the base output path used for converted files.
@@ -78,10 +78,10 @@ class Convert extends CliCommandBase {
 	 *
 	 * @return void
 	 */
-	protected function makeFileList() {
+	protected function makeFileList(): void {
 		$this->targetBasePath = $this->src . '/content/wikitext';
 		$this->src .= '/content/raw';
-		return parent::makeFileList();
+		parent::makeFileList();
 	}
 
 	/**
@@ -128,7 +128,7 @@ class Convert extends CliCommandBase {
 			$this->targetBasePath,
 			$this->currentFile->getPathname()
 		);
-		$this->targetPathname = preg_replace( '#\.mraw$#', '.wiki', $this->targetPathname );
+		$this->targetPathname = preg_replace( '#\\.mraw$#', '.wiki', $this->targetPathname );
 	}
 
 	/**
