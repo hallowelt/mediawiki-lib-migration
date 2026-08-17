@@ -5,9 +5,9 @@ namespace HalloWelt\MediaWiki\Lib\Migration;
 use HalloWelt\MediaWiki\Lib\Migration\Database\DataReader\IDataReader;
 use HalloWelt\MediaWiki\Lib\Migration\Database\DataWriter\IDataWriter;
 use SplFileInfo;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Throwable;
 
@@ -155,6 +155,8 @@ abstract class CliWorkersCommandBase extends CliCommandBase {
 	 * that performs the real command execution. The base class owns the process
 	 * split, child spawning, pipe replay, and exit-code aggregation.
 	 *
+	 * @param InputInterface $input
+	 * @param OutputInterface $output
 	 * @param callable():int $runCommand
 	 */
 	protected function executeWithWorkers(
@@ -260,6 +262,7 @@ abstract class CliWorkersCommandBase extends CliCommandBase {
 			$pipes = [];
 			// proc_open() is used intentionally so the child can inherit the exact
 			// command line while adding only its worker slice index.
+			// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.proc_open
 			$proc = proc_open( [ ...self::baseCommandFromArgv(), '--worker=' . $i ], $descriptors, $pipes );
 			if ( $proc === false ) {
 				$output->writeln( "<error>Failed to start worker {$i}.</error>" );
@@ -366,7 +369,7 @@ abstract class CliWorkersCommandBase extends CliCommandBase {
 	/**
 	 * Rebuild the current command line so worker children inherit the same
 	 * arguments, minus any pre-existing worker slice.
-	 * 
+	 *
 	 * We rebuild the current PHP invocation from $_SERVER['argv'] so the parent process
 	 * can spawn child workers with the same arguments.
 	 * At that point there is no InputInterface object to read from,
@@ -426,6 +429,8 @@ abstract class CliWorkersCommandBase extends CliCommandBase {
 	 * A worker that dies mid-run leaves nothing behind on the CLI otherwise, so the
 	 * cause, the captured stderr tail and any unapplied records are printed together.
 	 *
+	 * @param OutputInterface $output
+	 * @param int $worker
 	 * @param array{exitcode:int,signaled:bool,termsig:int} $status
 	 */
 	private function reportWorkerResult( OutputInterface $output, int $worker, array $status ): void {
@@ -522,6 +527,12 @@ abstract class CliWorkersCommandBase extends CliCommandBase {
 	 * Worker DB traffic is sent as one JSON message per line, so this helper
 	 * accumulates partial chunks until a full line is available and optionally
 	 * flushes the final tail when the pipe closes.
+	 *
+	 * @param string &$buffer
+	 * @param IDataWriter $dataWriter
+	 * @param int $worker
+	 * @param bool $flushTail
+	 * @return void
 	 */
 	private function replayBufferedWorkerOutput(
 		string &$buffer,
@@ -529,10 +540,12 @@ abstract class CliWorkersCommandBase extends CliCommandBase {
 		int $worker,
 		bool $flushTail = false
 	): void {
-		while ( ( $newline = strpos( $buffer, "\n" ) ) !== false ) {
+		$newline = strpos( $buffer, "\n" );
+		while ( $newline !== false ) {
 			$line = substr( $buffer, 0, $newline );
 			$buffer = substr( $buffer, $newline + 1 );
 			$this->replayWorkerLine( $dataWriter, $line, $worker );
+			$newline = strpos( $buffer, "\n" );
 		}
 
 		if ( $flushTail && $buffer !== '' ) {

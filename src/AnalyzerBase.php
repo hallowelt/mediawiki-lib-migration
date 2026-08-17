@@ -18,5 +18,6 @@ abstract class AnalyzerBase implements IAnalyzer {
 	 * @param SplFileInfo $file
 	 * @return bool
 	 */
-	public function analyze( SplFileInfo $file ): bool {}
+	public function analyze( SplFileInfo $file ): bool {
+	}
 }

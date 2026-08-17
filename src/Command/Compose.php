@@ -20,7 +20,7 @@ class Compose extends CliCommandBase {
 	 * @var IComposer[]
 	 */
 	protected $composers = [];
-	
+
 	/**
 	 * Returns the name of the command.
 	 *
