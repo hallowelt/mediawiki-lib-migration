@@ -124,4 +124,28 @@ class Workspace {
 
 		return $filepath;
 	}
+
+	/**
+	 * copy a file from source to target
+	 *
+	 * If possible, use hardlinks. Test the hardlink possibility. A setup where hardlinks would
+	 * fail is when source and target folders are mounted differently into a docker container.
+	 *
+	 * @param string $sourceFile
+	 * @param string $targetFile
+	 * @return string The path to the target file after copying
+	 */
+	public function copyFile( string $sourceFile, string $targetFile ): string {
+		$this->ensurePath( dirname( $targetFile ) );
+		$anchoredTargetFile = $this->workspaceDir->getPathname() . '/' . $targetFile;
+		$canLink = false;
+		if ( function_exists( 'link' ) ) {
+			// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+			$canLink = @link( $sourceFile, $anchoredTargetFile );
+		}
+		if ( !$canLink || !file_exists( $anchoredTargetFile ) ) {
+			copy( $sourceFile, $anchoredTargetFile );
+		}
+		return $anchoredTargetFile;
+	}
 }
