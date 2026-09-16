@@ -2,9 +2,6 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
-/**
- *
- */
 class ApplyCompressedTitle {
 
 	/** @var array */

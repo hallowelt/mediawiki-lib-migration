@@ -7,25 +7,21 @@ use SplFileInfo;
 abstract class ConverterBase implements IConverter {
 
 	/**
-	 *
 	 * @var array
 	 */
 	protected $config = [];
 
 	/**
-	 *
 	 * @var Workspace
 	 */
 	protected $workspace = null;
 
 	/**
-	 *
 	 * @var SplFileInfo
 	 */
 	protected $currentFile = null;
 
 	/**
-	 *
 	 * @param array $config
 	 * @param Workspace $workspace
 	 */
@@ -35,7 +31,6 @@ abstract class ConverterBase implements IConverter {
 	}
 
 	/**
-	 *
 	 * @param array $config
 	 * @param Workspace $workspace
 	 * @return IConverter
@@ -45,7 +40,6 @@ abstract class ConverterBase implements IConverter {
 	}
 
 	/**
-	 *
 	 * @param SplFileInfo $file
 	 * @return string
 	 */
@@ -55,7 +49,6 @@ abstract class ConverterBase implements IConverter {
 	}
 
 	/**
-	 *
 	 * @param SplFileInfo $file
 	 * @return string
 	 */

@@ -104,7 +104,6 @@ class WindowsFilename {
 	];
 
 	/**
-	 *
 	 * @param string $filename
 	 */
 	public function __construct( $filename ) {

@@ -7,7 +7,6 @@ use SplFileInfo;
 interface IExtractor {
 
 	/**
-	 *
 	 * @param SplFileInfo $file
 	 * @return bool
 	 */

@@ -13,17 +13,22 @@ use SplFileInfo;
 use Symfony\Component\Console\Command\Command;
 
 class Compose extends CliCommandBase {
+	/**
+	 * @inheritDoc
+	 */
 	protected function configure() {
 		$this->setName( 'compose' );
 		return parent::configure();
 	}
 
+	/**
+	 * @return array
+	 */
 	protected function makeFileList() {
 		return [];
 	}
 
 	/**
-	 *
 	 * @return array
 	 */
 	protected function getBucketKeys() {
@@ -57,7 +62,6 @@ class Compose extends CliCommandBase {
 	}
 
 	/**
-	 *
 	 * @return IComposer[]
 	 */
 	protected function makeComposers() {

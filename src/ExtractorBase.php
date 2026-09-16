@@ -7,37 +7,31 @@ use SplFileInfo;
 abstract class ExtractorBase implements IExtractor {
 
 	/**
-	 *
 	 * @var array
 	 */
 	protected $config = [];
 
 	/**
-	 *
 	 * @var Workspace
 	 */
 	protected $workspace = null;
 
 	/**
-	 *
 	 * @var DataBuckets
 	 */
 	protected $buckets = null;
 
 	/**
-	 *
 	 * @var DataBuckets
 	 */
 	protected $analyzeBuckets = null;
 
 	/**
-	 *
 	 * @var SplFileInfo
 	 */
 	protected $currentFile = null;
 
 	/**
-	 *
 	 * @param array $config
 	 * @param Workspace $workspace
 	 * @param DataBuckets $buckets
@@ -58,7 +52,6 @@ abstract class ExtractorBase implements IExtractor {
 	}
 
 	/**
-	 *
 	 * @param array $config
 	 * @param Workspace $workspace
 	 * @param DataBuckets $buckets
@@ -69,7 +62,6 @@ abstract class ExtractorBase implements IExtractor {
 	}
 
 	/**
-	 *
 	 * @param SplFileInfo $file
 	 * @return bool
 	 */
@@ -86,7 +78,6 @@ abstract class ExtractorBase implements IExtractor {
 	abstract protected function doExtract( SplFileInfo $file ): bool;
 
 	/**
-	 *
 	 * @param string $revisionReference
 	 * @param string $contentReference
 	 */
@@ -95,7 +86,6 @@ abstract class ExtractorBase implements IExtractor {
 	}
 
 	/**
-	 *
 	 * @param string $titleText
 	 * @param string $meta
 	 */

@@ -7,7 +7,6 @@ use Symfony\Component\Console\Application;
 class CliApp extends Application {
 
 	/**
-	 *
 	 * @param array $config
 	 */
 	public function __construct( $config ) {

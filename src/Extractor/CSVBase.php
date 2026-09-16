@@ -7,19 +7,16 @@ use SplFileInfo;
 
 abstract class CSVBase extends ExtractorBase {
 	/**
-	 *
 	 * @var array
 	 */
 	protected $currentLineData = [];
 
 	/**
-	 *
 	 * @var int
 	 */
 	protected $currentLineNumber = 0;
 
 	/**
-	 *
 	 * @param SplFileInfo $file
 	 * @return bool
 	 */
@@ -40,8 +37,14 @@ abstract class CSVBase extends ExtractorBase {
 		return true;
 	}
 
+	/**
+	 * @return void
+	 */
 	abstract protected function doExtractLine();
 
+	/**
+	 * @return bool
+	 */
 	protected function skipCurrentLine() {
 		if ( $this->currentLineNumber === 0 && $this->skipHeaderLine() ) {
 			return true;
@@ -50,6 +53,9 @@ abstract class CSVBase extends ExtractorBase {
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	protected function skipHeaderLine() {
 		return true;
 	}

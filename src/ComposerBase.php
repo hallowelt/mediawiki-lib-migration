@@ -5,25 +5,21 @@ namespace HalloWelt\MediaWiki\Lib\Migration;
 abstract class ComposerBase implements IComposer {
 
 	/**
-	 *
 	 * @var array
 	 */
 	protected $config = [];
 
 	/**
-	 *
 	 * @var Workspace
 	 */
 	protected $workspace = null;
 
 	/**
-	 *
 	 * @var DataBuckets
 	 */
 	protected $buckets = null;
 
 	/**
-	 *
 	 * @param array $config
 	 * @param Workspace $workspace
 	 * @param DataBuckets $buckets
@@ -35,7 +31,6 @@ abstract class ComposerBase implements IComposer {
 	}
 
 	/**
-	 *
 	 * @param array $config
 	 * @param Workspace $workspace
 	 * @param DataBuckets $buckets
