@@ -3,14 +3,14 @@
 namespace HalloWelt\MediaWiki\Lib\Migration\Command;
 
 use Exception;
-use HalloWelt\MediaWiki\Lib\Migration\CliCommandBase;
+use HalloWelt\MediaWiki\Lib\Migration\CliWorkersCommandBase;
 use HalloWelt\MediaWiki\Lib\Migration\IAnalyzer;
 use HalloWelt\MediaWiki\Lib\Migration\IOutputAwareInterface;
 
 /**
- * Runs analyzer callbacks sequentially in a single-process command context.
+ * Base analyze command variant that supports worker orchestration.
  */
-class Analyze extends CliCommandBase {
+abstract class AnalyzeWorkers extends CliWorkersCommandBase {
 
 	/**
 	 * Holds initialized analyzers indexed by configuration key.

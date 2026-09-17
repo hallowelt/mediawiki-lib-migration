@@ -6,46 +6,17 @@ use SplFileInfo;
 
 abstract class ConverterBase implements IConverter {
 
-	/**
-	 *
-	 * @var array
-	 */
-	protected $config = [];
-
-	/**
-	 *
-	 * @var Workspace
-	 */
-	protected $workspace = null;
-
-	/**
-	 *
-	 * @var SplFileInfo
-	 */
+	/** @var SplFileInfo */
 	protected $currentFile = null;
 
 	/**
-	 *
-	 * @param array $config
-	 * @param Workspace $workspace
-	 */
-	public function __construct( $config, Workspace $workspace ) {
-		$this->config = $config;
-		$this->workspace = $workspace;
-	}
-
-	/**
-	 *
-	 * @param array $config
-	 * @param Workspace $workspace
 	 * @return IConverter
 	 */
-	public static function factory( $config, Workspace $workspace ) {
-		return new static( $config, $workspace );
+	public static function factory() {
+		return new static();
 	}
 
 	/**
-	 *
 	 * @param SplFileInfo $file
 	 * @return string
 	 */
@@ -55,7 +26,6 @@ abstract class ConverterBase implements IConverter {
 	}
 
 	/**
-	 *
 	 * @param SplFileInfo $file
 	 * @return string
 	 */

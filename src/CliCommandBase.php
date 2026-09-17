@@ -10,11 +10,8 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	/** @var ExecutionTime */
 	protected $executionTime;
 
-	/**
-	 *
-	 * @var array
-	 */
-	protected $config = [];
+	/** @var IFileProcessorEventHandler */
+	protected $eventhandlers = [];
 
 	/**
 	 * @var Workspace
@@ -22,30 +19,8 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	protected $workspace = null;
 
 	/**
-	 * @var DataBuckets
+	 * @return int
 	 */
-	protected $buckets = null;
-
-	/**
-	 * @var DataBuckets
-	 */
-	protected $executionTimeBuckets = null;
-
-	/**
-	 *
-	 * @var IFileProcessorEventHandler
-	 */
-	protected $eventhandlers = [];
-
-	/**
-	 *
-	 * @param array $config
-	 */
-	public function __construct( $config ) {
-		parent::__construct();
-		$this->config = $config;
-	}
-
 	protected function processFiles(): int {
 		$this->beforeProcessFiles();
 		$this->runBeforeProcessFilesEventHandlers();
@@ -55,58 +30,54 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 		return $returnValue;
 	}
 
-	protected function beforeProcessFiles() {
+	/**
+	 * @return void
+	 */
+	protected function beforeProcessFiles(): void {
 		if ( !is_dir( $this->dest ) ) {
 			$this->output->writeln( "Destination does not exist" );
 			exit();
 		}
+
 		$workspaceDir = new SplFileInfo( $this->dest );
 		$this->workspace = new Workspace( $workspaceDir );
 
 		$this->initExecutionTime();
-
-		$this->buckets = new DataBuckets( $this->getBucketKeys() );
-		$this->buckets->loadFromWorkspace( $this->workspace );
-	}
-
-	protected function afterProcessFiles() {
-		$this->buckets->saveToWorkspace( $this->workspace );
-		$this->logExecutionTime();
-	}
-
-	protected function initExecutionTime() {
-		$this->executionTime = new ExecutionTime();
-		$this->executionTimeBuckets = new DataBuckets( [ 'execution-time' ] );
-		$this->executionTimeBuckets->loadFromWorkspace( $this->workspace );
-	}
-
-	protected function logExecutionTime() {
-		$time = $this->executionTime->getHumanReadableTime();
-		$this->output->writeln( "\nExecution time: {$time}\n" );
-		$this->executionTimeBuckets->addData(
-			'execution-time',
-			$this->getName(),
-			$time,
-			false,
-			true
-		);
-		$this->executionTimeBuckets->saveToWorkspace( $this->workspace );
 	}
 
 	/**
-	 *
-	 * @return array
+	 * @return void
 	 */
-	protected function getBucketKeys() {
-		return [];
+	protected function afterProcessFiles(): void {
+		$this->logExecutionTime();
 	}
 
+	/**
+	 * @return void
+	 */
+	protected function initExecutionTime(): void {
+		$this->executionTime = new ExecutionTime();
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getExecutionTime(): string {
+		return $this->executionTime->getHumanReadableTime();
+	}
+
+	/**
+	 * @return void
+	 */
 	protected function runBeforeProcessFilesEventHandlers() {
 		foreach ( $this->eventhandlers as $handler ) {
 			$handler->beforeProcessFiles( new SplFileInfo( $this->src ) );
 		}
 	}
 
+	/**
+	 * @return void
+	 */
 	protected function runAfterProcessFilesEventHandlers() {
 		foreach ( $this->eventhandlers as $handler ) {
 			$handler->afterProcessFiles( new SplFileInfo( $this->src ) );
@@ -114,7 +85,6 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	}
 
 	/**
-	 *
 	 * @param SplFileInfo $file
 	 * @return bool
 	 */
@@ -124,12 +94,6 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	}
 
 	/**
-	 * @return bool
-	 */
-	abstract protected function doProcessFile(): bool;
-
-	/**
-	 *
 	 * @return array
 	 */
 	protected function makeExtensionWhitelist(): array {
@@ -138,4 +102,14 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 		}
 		return [];
 	}
+
+	/**
+	 * @return void
+	 */
+	abstract protected function logExecutionTime(): void;
+
+	/**
+	 * @return bool
+	 */
+	abstract protected function doProcessFile(): bool;
 }
