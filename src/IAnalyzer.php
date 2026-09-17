@@ -7,7 +7,6 @@ use SplFileInfo;
 interface IAnalyzer {
 
 	/**
-	 *
 	 * @param SplFileInfo $file
 	 * @return bool
 	 */

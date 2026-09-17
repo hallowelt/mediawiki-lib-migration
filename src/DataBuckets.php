@@ -10,13 +10,11 @@ namespace HalloWelt\MediaWiki\Lib\Migration;
 class DataBuckets {
 
 	/**
-	 *
 	 * @var array
 	 */
 	protected $buckets = [];
 
 	/**
-	 *
 	 * @param string[] $bucketKeys
 	 */
 	public function __construct( $bucketKeys ) {
@@ -71,7 +69,6 @@ class DataBuckets {
 	}
 
 	/**
-	 *
 	 * @param string $buckedKey
 	 * @param array $data
 	 */
@@ -80,7 +77,6 @@ class DataBuckets {
 	}
 
 	/**
-	 *
 	 * @param string $bucketKey
 	 * @return array
 	 */
@@ -89,7 +85,6 @@ class DataBuckets {
 	}
 
 	/**
-	 *
 	 * @param Workspace $workspace
 	 */
 	public function saveToWorkspace( Workspace $workspace ) {
@@ -99,7 +94,6 @@ class DataBuckets {
 	}
 
 	/**
-	 *
 	 * @param Workspace $workspace
 	 */
 	public function loadFromWorkspace( Workspace $workspace ) {

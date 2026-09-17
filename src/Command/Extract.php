@@ -12,13 +12,11 @@ use HalloWelt\MediaWiki\Lib\Migration\IOutputAwareInterface;
 class Extract extends CliCommandBase {
 
 	/**
-	 *
 	 * @var IExtractor[]
 	 */
 	protected $extractors = [];
 
 	/**
-	 *
 	 * @inheritDoc
 	 */
 	protected function configure() {
@@ -27,7 +25,6 @@ class Extract extends CliCommandBase {
 	}
 
 	/**
-	 *
 	 * @inheritDoc
 	 */
 	protected function getBucketKeys() {

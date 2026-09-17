@@ -11,7 +11,6 @@ use HalloWelt\MediaWiki\Lib\Migration\IOutputAwareInterface;
 class Analyze extends CliCommandBase {
 
 	/**
-	 *
 	 * @inheritDoc
 	 */
 	protected function configure() {
@@ -20,7 +19,6 @@ class Analyze extends CliCommandBase {
 	}
 
 	/**
-	 *
 	 * @inheritDoc
 	 */
 	protected function getBucketKeys() {

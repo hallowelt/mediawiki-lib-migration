@@ -52,13 +52,11 @@ class TitleBuilder {
 	private $namespacePrefix = '';
 
 	/**
-	 *
 	 * @var string[]
 	 */
 	private $titleSegments = [];
 
 	/**
-	 *
 	 * @param array $namespaceMap
 	 */
 	public function __construct( array $namespaceMap ) {
@@ -102,7 +100,6 @@ class TitleBuilder {
 	}
 
 	/**
-	 *
 	 * @param int $namespaceId
 	 * @return TitleBuilder
 	 */
@@ -116,7 +113,6 @@ class TitleBuilder {
 	}
 
 	/**
-	 *
 	 * @param string $segment
 	 * @return TitleBuilder
 	 */
@@ -130,7 +126,6 @@ class TitleBuilder {
 	}
 
 	/**
-	 *
 	 * @return TitleBuilder
 	 */
 	public function reduceTitleSegments(): TitleBuilder {
@@ -139,7 +134,6 @@ class TitleBuilder {
 	}
 
 	/**
-	 *
 	 * @return TitleBuilder
 	 */
 	public function invertTitleSegments(): TitleBuilder {
@@ -170,7 +164,6 @@ class TitleBuilder {
 	}
 
 	/**
-	 *
 	 * @param string $segment
 	 * @return string
 	 */

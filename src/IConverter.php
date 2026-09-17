@@ -7,7 +7,6 @@ use SplFileInfo;
 interface IConverter {
 
 	/**
-	 *
 	 * @param SplFileInfo $file
 	 * @return string
 	 */

@@ -11,7 +11,6 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	protected $executionTime;
 
 	/**
-	 *
 	 * @var array
 	 */
 	protected $config = [];
@@ -32,13 +31,11 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	protected $executionTimeBuckets = null;
 
 	/**
-	 *
 	 * @var IFileProcessorEventHandler
 	 */
 	protected $eventhandlers = [];
 
 	/**
-	 *
 	 * @param array $config
 	 */
 	public function __construct( $config ) {
@@ -94,7 +91,6 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	}
 
 	/**
-	 *
 	 * @return array
 	 */
 	protected function getBucketKeys() {
@@ -114,7 +110,6 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	}
 
 	/**
-	 *
 	 * @param SplFileInfo $file
 	 * @return bool
 	 */
@@ -129,7 +124,6 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	abstract protected function doProcessFile(): bool;
 
 	/**
-	 *
 	 * @return array
 	 */
 	protected function makeExtensionWhitelist(): array {

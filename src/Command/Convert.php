@@ -10,16 +10,21 @@ use HalloWelt\MediaWiki\Lib\Migration\IOutputAwareInterface;
 class Convert extends CliCommandBase {
 
 	/**
-	 *
 	 * @var string
 	 */
 	private $targetBasePath = '';
 
+	/**
+	 * @inheritDoc
+	 */
 	protected function configure() {
 		$this->setName( 'convert' );
 		return parent::configure();
 	}
 
+	/**
+	 * @inheritDoc
+	 */
 	protected function makeFileList() {
 		$this->targetBasePath = $this->src . '/content/wikitext';
 		$this->src .= '/content/raw';

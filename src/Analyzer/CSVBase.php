@@ -8,13 +8,11 @@ use SplFileInfo;
 abstract class CSVBase extends AnalyzerBase {
 
 	/**
-	 *
 	 * @var array
 	 */
 	protected $currentLineData = [];
 
 	/**
-	 *
 	 * @var int
 	 */
 	protected $currentLineNumber = 0;
@@ -39,6 +37,9 @@ abstract class CSVBase extends AnalyzerBase {
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	protected function skipCurrentLine() {
 		if ( $this->currentLineNumber === 0 && $this->skipHeaderLine() ) {
 			return true;
@@ -47,9 +48,15 @@ abstract class CSVBase extends AnalyzerBase {
 		return false;
 	}
 
+	/**
+	 * @return bool
+	 */
 	protected function skipHeaderLine() {
 		return true;
 	}
 
+	/**
+	 * @return void
+	 */
 	abstract protected function doAnalyzeLine();
 }

@@ -7,31 +7,26 @@ use SplFileInfo;
 abstract class AnalyzerBase implements IAnalyzer {
 
 	/**
-	 *
 	 * @var array
 	 */
 	protected $config = [];
 
 	/**
-	 *
 	 * @var Workspace
 	 */
 	protected $workspace = null;
 
 	/**
-	 *
 	 * @var DataBuckets
 	 */
 	protected $buckets = null;
 
 	/**
-	 *
 	 * @var SplFileInfo
 	 */
 	protected $currentFile = null;
 
 	/**
-	 *
 	 * @param array $config
 	 * @param Workspace $workspace
 	 * @param DataBuckets $buckets
@@ -43,7 +38,6 @@ abstract class AnalyzerBase implements IAnalyzer {
 	}
 
 	/**
-	 *
 	 * @param array $config
 	 * @param Workspace $workspace
 	 * @param DataBuckets $buckets
@@ -54,7 +48,6 @@ abstract class AnalyzerBase implements IAnalyzer {
 	}
 
 	/**
-	 *
 	 * @param SplFileInfo $file
 	 * @return bool
 	 */
@@ -71,7 +64,6 @@ abstract class AnalyzerBase implements IAnalyzer {
 	abstract protected function doAnalyze( SplFileInfo $file ): bool;
 
 	/**
-	 *
 	 * @param string $titleText
 	 * @param string $contentReference
 	 * @return void
@@ -81,7 +73,6 @@ abstract class AnalyzerBase implements IAnalyzer {
 	}
 
 	/**
-	 *
 	 * @param string $titleText
 	 * @param string $attachmentReference
 	 * @return void
@@ -91,7 +82,6 @@ abstract class AnalyzerBase implements IAnalyzer {
 	}
 
 	/**
-	 *
 	 * @param string $rawFilename
 	 * @param string $attachmentReference
 	 * @return void
@@ -111,7 +101,6 @@ abstract class AnalyzerBase implements IAnalyzer {
 	}
 
 	/**
-	 *
 	 * @param string $filename
 	 * @return void
 	 */
@@ -120,13 +109,11 @@ abstract class AnalyzerBase implements IAnalyzer {
 	}
 
 	/**
-	 *
 	 * @var array
 	 */
 	protected $rawFilenameReferenceMap = [];
 
 	/**
-	 *
 	 * @param string $rawFilename
 	 * @param string $attachmentReference
 	 * @return void
@@ -143,7 +130,6 @@ abstract class AnalyzerBase implements IAnalyzer {
 	}
 
 	/**
-	 *
 	 * @param string $rawFilename
 	 * @param string $attachmentReference
 	 * @return void

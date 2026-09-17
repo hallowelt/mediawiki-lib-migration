@@ -6,9 +6,6 @@ class ExecutionTime {
 	/** @var float */
 	private $executionTimeStart;
 
-	/**
-	 *
-	 */
 	public function __construct() {
 		$this->executionTimeStart = $this->getMicrotime();
 	}

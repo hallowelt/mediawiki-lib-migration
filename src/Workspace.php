@@ -7,13 +7,11 @@ use SplFileInfo;
 class Workspace {
 
 	/**
-	 *
 	 * @var protected
 	 */
 	private $workspaceDir = null;
 
 	/**
-	 *
 	 * @param SplFileInfo $workspaceDir
 	 */
 	public function __construct( SplFileInfo $workspaceDir ) {
@@ -21,7 +19,6 @@ class Workspace {
 	}
 
 	/**
-	 *
 	 * @param string $filename
 	 * @param string $path
 	 * @return array
@@ -39,7 +36,6 @@ class Workspace {
 	}
 
 	/**
-	 *
 	 * @param string $filename
 	 * @param array $data
 	 * @param string $path
@@ -61,7 +57,6 @@ class Workspace {
 	}
 
 	/**
-	 *
 	 * @param string $filename
 	 * @return string
 	 */
@@ -70,7 +65,6 @@ class Workspace {
 	}
 
 	/**
-	 *
 	 * @param string $contentId
 	 * @param string $rawData
 	 * @param string $path
@@ -86,7 +80,6 @@ class Workspace {
 	}
 
 	/**
-	 *
 	 * @param string $subpath
 	 * @return void
 	 */
@@ -98,7 +91,6 @@ class Workspace {
 	}
 
 	/**
-	 *
 	 * @param string $contentId
 	 *
 	 * @return string The wikitext content as created by step "convert"
@@ -111,7 +103,6 @@ class Workspace {
 	}
 
 	/**
-	 *
 	 * @param string $targetFileName
 	 * @param string $content
 	 * @param string $path
