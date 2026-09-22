@@ -3,6 +3,7 @@
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
 use HalloWelt\MediaWiki\Lib\CommandLineTools\Commands\BatchFileProcessorBase;
+use HalloWelt\MediaWiki\Lib\Migration\Logging\Log;
 use SplFileInfo;
 
 abstract class CliCommandBase extends BatchFileProcessorBase {
@@ -53,8 +54,15 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 	}
 
 	protected function beforeProcessFiles() {
+		// Route Log::*() through the same Output the command already writes to directly
+		// (IOutputAwareInterface), so both share TTY/color detection and verbosity.
+		Log::setConsoleOutput( $this->output );
+		// Tags every subsequent log record (e.g. the DB handler's `step` column) with the
+		// command name (analyze/extract/convert/compose), set via setName() in configure().
+		Log::setStep( $this->getName() ?? '' );
+
 		if ( !is_dir( $this->dest ) ) {
-			$this->output->writeln( "Destination does not exist" );
+			Log::error( "Destination does not exist" );
 			exit();
 		}
 		$workspaceDir = new SplFileInfo( $this->dest );
@@ -79,7 +87,7 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 
 	protected function logExecutionTime() {
 		$time = $this->executionTime->getHumanReadableTime();
-		$this->output->writeln( "\nExecution time: {$time}\n" );
+		Log::notice( "\nExecution time: {$time}\n" );
 		$this->executionTimeBuckets->addData(
 			'execution-time',
 			$this->getName(),
