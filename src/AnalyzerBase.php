@@ -2,6 +2,7 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
+use HalloWelt\MediaWiki\Lib\Migration\Logging\Log;
 use SplFileInfo;
 
 abstract class AnalyzerBase implements IAnalyzer {
@@ -91,7 +92,7 @@ abstract class AnalyzerBase implements IAnalyzer {
 			$filename = $this->getFilename( $rawFilename, $attachmentReference );
 			$filename = ( new WindowsFilename( $filename ) ) . '';
 		} catch ( InvalidTitleException $ex ) {
-			$this->logger->error( $ex->getMessage() );
+			Log::logException( $ex );
 			return;
 		}
 
