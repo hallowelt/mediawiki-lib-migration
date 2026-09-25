@@ -14,11 +14,17 @@ class PandocHTML extends ConverterBase {
 		$path = $file->getPathname();
 		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.escapeshellarg
 		$escapedCommand = 'pandoc -f html -t mediawiki ' . escapeshellarg( $path );
-		$result = [];
+		$output = [];
+		$resultCode = null;
 		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
-		exec( $escapedCommand, $result );
+		exec( $escapedCommand, $output, $resultCode );
 
-		$wikitext = implode( "\n", $result );
+		if ( $result !== 0 ) {
+			// pandoc error
+			return "<!-- html could not be converted to wikitext -->";
+		}
+
+		$wikitext = implode( "\n", $output );
 
 		return $wikitext;
 	}
