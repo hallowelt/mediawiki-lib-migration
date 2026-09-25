@@ -21,7 +21,7 @@ class PandocHTML extends ConverterBase {
 
 		if ( $resultCode !== 0 ) {
 			// pandoc error
-			return "<!-- html could not be converted to wikitext -->";
+			return "<!-- html could not be converted to wikitext -->\n";
 		}
 
 		$wikitext = implode( "\n", $output );
