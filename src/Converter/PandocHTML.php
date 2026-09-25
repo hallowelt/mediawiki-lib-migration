@@ -19,7 +19,7 @@ class PandocHTML extends ConverterBase {
 		// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.exec
 		exec( $escapedCommand, $output, $resultCode );
 
-		if ( $result !== 0 ) {
+		if ( $resultCode !== 0 ) {
 			// pandoc error
 			return "<!-- html could not be converted to wikitext -->";
 		}
