@@ -138,7 +138,7 @@ targets at once, since a single call reaches every handler:
 |---|---|---|---|---|---|---|
 | `debug` | - | - | - | - | - | shown |
 | `info` | - | - | - | - | shown | shown |
-| `notice` | shown | shown | - | shown | shown | shown |
+| `notice` | shown | - | - | shown | shown | shown |
 | `warning` | shown | - | - | shown | shown | shown |
 | `error`/`critical`/`alert`/`emergency` | shown | shown | - | shown | shown | shown |
 
