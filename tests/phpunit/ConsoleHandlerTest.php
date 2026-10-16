@@ -25,37 +25,44 @@ class ConsoleHandlerTest extends TestCase {
 	 * @covers HalloWelt\MediaWiki\Lib\Migration\Logging\ConsoleHandler
 	 * @return void
 	 */
-	public function testErrorLevelsStayVisibleUnderQuietVerbosity(): void {
+	public function testQuietVerbosityHidesWarningsAndErrors(): void {
 		$output = new BufferedOutput();
 		$output->setVerbosity( OutputInterface::VERBOSITY_QUIET );
 		$logger = $this->makeLogger( $output );
 
-		$logger->notice( 'quiet please' );
-		$logger->warning( 'quiet please too' );
-		$logger->error( 'still shown' );
-		$logger->critical( 'still shown too' );
+		$logger->warning( 'hidden' );
+		$logger->error( 'hidden too' );
 
-		$fetched = $output->fetch();
-		$this->assertStringNotContainsString( 'quiet please', $fetched );
-		$this->assertStringContainsString( 'still shown', $fetched );
-		$this->assertStringContainsString( 'still shown too', $fetched );
+		$this->assertSame( '', $output->fetch() );
 	}
 
 	/**
 	 * @covers HalloWelt\MediaWiki\Lib\Migration\Logging\ConsoleHandler
 	 * @return void
 	 */
-	public function testNoticeStaysVisibleAtNormalVerbosity(): void {
+	public function testNoticeAndInfoNeedIncreasedVerbosity(): void {
 		$output = new BufferedOutput();
 		$output->setVerbosity( OutputInterface::VERBOSITY_NORMAL );
 		$logger = $this->makeLogger( $output );
 
-		$logger->notice( 'visible by default' );
-		$logger->info( 'hidden by default' );
+		$logger->warning( 'visible by default' );
+		$logger->notice( 'needs v' );
+		$logger->info( 'needs vv' );
 
 		$fetched = $output->fetch();
 		$this->assertStringContainsString( 'visible by default', $fetched );
-		$this->assertStringNotContainsString( 'hidden by default', $fetched );
+		$this->assertStringNotContainsString( 'needs', $fetched );
+
+		$output->setVerbosity( OutputInterface::VERBOSITY_VERBOSE );
+		$logger->notice( 'needs v' );
+		$logger->info( 'needs vv' );
+		$fetched = $output->fetch();
+		$this->assertStringContainsString( 'needs v', $fetched );
+		$this->assertStringNotContainsString( 'needs vv', $fetched );
+
+		$output->setVerbosity( OutputInterface::VERBOSITY_VERY_VERBOSE );
+		$logger->info( 'needs vv' );
+		$this->assertStringContainsString( 'needs vv', $output->fetch() );
 	}
 
 	/**

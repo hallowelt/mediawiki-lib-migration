@@ -234,7 +234,7 @@ class LogTest extends TestCase {
 		$output = new \Symfony\Component\Console\Output\BufferedOutput();
 		Log::setConsoleOutput( $output );
 
-		Log::notice( 'routed message' );
+		Log::warning( 'routed message' );
 
 		$this->assertStringContainsString( 'routed message', $output->fetch() );
 	}

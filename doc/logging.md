@@ -17,8 +17,11 @@ the same time, each with its own independent verbosity:
 ## Quick start
 
 Without any configuration, `Log::*()` calls already work out of the box:
-messages of level `notice` and above are printed to the console (colored iff
-the output is a TTY). File and database logging are opt-in.
+messages of level `warning` and above are printed to the console (colored iff
+the output is a TTY); `notice`, `info` and `debug` appear with `-v`, `-vv` and
+`-vvv`, see
+[Console visibility per level](#console-visibility-per-level-default-configuration).
+File and database logging are opt-in.
 
 ```php
 use HalloWelt\MediaWiki\Lib\Migration\Logging\Log;
@@ -49,7 +52,9 @@ Log::configure( [
         ],
     ],
     'handlers' => [
-        'console' => [ 'level' => 'notice' ],
+        // Keep the console handler at 'debug' (its default): Symfony's -v/-vv/-vvv
+        // flags do the filtering. A higher level here cuts off info/debug for good.
+        'console' => [ 'level' => 'debug' ],
         'file' => [
             'level' => 'debug',
             'path' => '/var/log/migration/run.log',
@@ -88,31 +93,27 @@ implementation may use a different schema as long as it exposes the same
 five values per call. `$timestamp` is the log record's time formatted as
 ISO 8601 (`DateTimeInterface::ATOM`, e.g. `2026-09-22T14:03:00+02:00`).
 
-### Console handler and `--quiet`/`--silent`
+### Console handler and verbosity
 
-If your project subclasses `CliCommandBase` (as `Analyze`/`Extract`/
-`Convert`/`Compose` do), the console handler is automatically routed
-through the command's real Symfony `Output` object
-(`Log::setConsoleOutput()`, called from `beforeProcessFiles()`), so
-`Log::*()` shares the exact same stream, color/TTY detection, and verbosity
-flags (`-v`, `-q`, ...) as code still writing directly via
-`$output->writeln()`.
+`CliApp` routes the console handler through the running command's real
+Symfony `Output` object for **every** command, including downstream
+commands that do not extend `CliCommandBase` (it overrides
+`doRunCommand()` and calls `Log::setConsoleOutput()`). So `Log::*()` shares
+the exact same stream, color/TTY detection, and verbosity flags (`-v`,
+`-q`, ...) as code still writing directly via `$output->writeln()`.
+`CliCommandBase::beforeProcessFiles()` does the same for its subclasses.
+
+The console handler's own level defaults to `debug`, so what is shown is
+decided solely by the verbosity flags. Only call `Log::setConsoleOutput()`
+yourself if you run commands outside `CliApp`.
 
 The current migration step (`analyze`/`extract`/`convert`/`compose`) is
 likewise tagged automatically via `Log::setStep()`, using the command's
 name; this value ends up in the database handler's `step` column.
 
-Console verbosity deliberately departs from `ConsoleLogger`'s own defaults
-in two ways:
-
-- `notice` is always shown at normal verbosity (like `warning`/`error`),
-  not gated behind `-v`. This preserves the visibility that plain
-  `$output->writeln()` calls used to have before being migrated to `Log::`.
-- `error`, `critical`, `alert` and `emergency` are shown even when the
-  command is run with `--quiet`. A migration failure should not be
-  silenced by the same flag that quiets down progress/informational
-  noise. Use `--silent` (where supported by the console application) to
-  suppress console output entirely, including errors.
+Console verbosity follows Symfony's `ConsoleLogger` defaults, without any
+special casing: see the table below. `--quiet` hides all log output; use
+`--silent` (where supported by the console application) likewise.
 
 ## Log levels
 
@@ -126,7 +127,7 @@ targets at once, since a single call reaches every handler:
 |---|---|
 | `debug` | Fine-grained diagnostic detail (e.g. "scanning file X") |
 | `info` | Normal, expected progress information |
-| `notice` | Noteworthy but non-error events (default console visibility) |
+| `notice` | Noteworthy but non-error events (shown with `-v`) |
 | `warning` | Something unexpected happened but processing continues |
 | `error` | An operation failed, but the overall run can continue |
 | `critical` | A whole step/component is broken and cannot continue |
@@ -138,9 +139,9 @@ targets at once, since a single call reaches every handler:
 |---|---|---|---|---|---|---|
 | `debug` | - | - | - | - | - | shown |
 | `info` | - | - | - | - | shown | shown |
-| `notice` | shown | - | - | shown | shown | shown |
+| `notice` | - | - | - | shown | shown | shown |
 | `warning` | shown | - | - | shown | shown | shown |
-| `error`/`critical`/`alert`/`emergency` | shown | shown | - | shown | shown | shown |
+| `error`/`critical`/`alert`/`emergency` | shown | - | - | shown | shown | shown |
 
 File and database handlers are unaffected by console verbosity flags; they
 only respect their own configured `level` from `Log::configure()`/

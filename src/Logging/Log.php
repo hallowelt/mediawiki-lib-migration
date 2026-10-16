@@ -245,7 +245,8 @@ class Log {
 	private static function getLogger(): Logger {
 		if ( self::$logger === null ) {
 			self::$logger = new Logger( 'migration' );
-			self::$handlers['console'] = new ConsoleHandler( new ConsoleOutput(), 'notice' );
+			// Verbosity (-v/-vv/-vvv) is filtered by ConsoleLogger, not by the handler level
+			self::$handlers['console'] = new ConsoleHandler( new ConsoleOutput(), Level::Debug );
 			self::$logger->pushHandler( self::$handlers['console'] );
 			self::$logger->pushProcessor(
 				new IntrospectionProcessor( Level::Debug, [ self::class ] )
