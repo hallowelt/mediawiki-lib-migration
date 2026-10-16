@@ -87,7 +87,7 @@ abstract class CliCommandBase extends BatchFileProcessorBase {
 
 	protected function logExecutionTime() {
 		$time = $this->executionTime->getHumanReadableTime();
-		Log::notice( "\nExecution time: {$time}\n" );
+		Log::notice( "Execution time: {$time}" );
 		$this->executionTimeBuckets->addData(
 			'execution-time',
 			$this->getName(),
