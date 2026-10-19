@@ -93,6 +93,46 @@ class LogTest extends TestCase {
 	}
 
 	/**
+	 * @covers HalloWelt\MediaWiki\Lib\Migration\Logging\Log::setDatabaseHandler
+	 * @return void
+	 */
+	public function testSetDatabaseHandlerReplacesAndRemovesPreviousHandler(): void {
+		$makeWriter = static function () {
+			return new class implements LogEntryWriter {
+				/** @var int */
+				public $count = 0;
+
+				public function addLogEntry(
+					string $timestamp,
+					string $type,
+					string $step,
+					string $caller,
+					string $text
+				): void {
+					$this->count++;
+				}
+			};
+		};
+		$first = $makeWriter();
+		$second = $makeWriter();
+
+		Log::configure( [ 'handlers' => [] ] );
+		Log::setDatabaseHandler( $first );
+		Log::setDatabaseHandler( $second );
+		Log::info( 'one' );
+		Log::to( 'db' )->info( 'two' );
+
+		$this->assertSame( 0, $first->count );
+		$this->assertSame( 2, $second->count );
+
+		Log::setDatabaseHandler( null );
+		Log::info( 'three' );
+		Log::to( 'db' )->info( 'four' );
+
+		$this->assertSame( 2, $second->count );
+	}
+
+	/**
 	 * @covers HalloWelt\MediaWiki\Lib\Migration\Logging\Log::configure
 	 * @return void
 	 */

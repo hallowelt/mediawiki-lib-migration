@@ -87,6 +87,11 @@ use HalloWelt\MediaWiki\Lib\Migration\Logging\Log;
 Log::setDatabaseHandler( $writer, 'info' ); // e.g. skip debug noise in the DB
 ```
 
+Calling `setDatabaseHandler()` again replaces the previous DB handler;
+`Log::setDatabaseHandler( null )` removes it (useful in tests and in worker
+processes that need a different sink than the parent). `Log::to( 'db' )`
+targets only this handler.
+
 The expected table shape (columns `timestamp`, `type`, `step`, `caller`,
 `text`) mirrors the `LogEntryWriter` interface; a different `LogEntryWriter`
 implementation may use a different schema as long as it exposes the same
@@ -102,6 +107,13 @@ commands that do not extend `CliCommandBase` (it overrides
 the exact same stream, color/TTY detection, and verbosity flags (`-v`,
 `-q`, ...) as code still writing directly via `$output->writeln()`.
 `CliCommandBase::beforeProcessFiles()` does the same for its subclasses.
+
+`CliApp` also hands `Log::getLogger()` (the shared PSR-3 logger) to every
+command that implements `Psr\Log\LoggerAwareInterface`. The base command
+`BatchFileProcessorBase` (hallowelt/mediawiki-lib-commandline-tools) does,
+and reports its progress (`Source`, `Destination`, file list, `Done.`) and
+errors (e.g. `Failed to process file`) at `info` and `error` level through
+it, so they respect the verbosity flags and reach the database handler.
 
 The console handler's own level defaults to `debug`, so what is shown is
 decided solely by the verbosity flags. Only call `Log::setConsoleOutput()`

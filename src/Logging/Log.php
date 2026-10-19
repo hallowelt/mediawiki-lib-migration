@@ -108,14 +108,22 @@ class Log {
 	 * (e.g. a `WorkspaceDB`) is created by the downstream project, not from a config array,
 	 * and should be wired up early, before/independently of the rest of the configuration.
 	 *
-	 * @param LogEntryWriter $writer
+	 * Calling it again replaces the previous DB handler; passing null removes it.
+	 *
+	 * @param LogEntryWriter|null $writer
 	 * @param int|string $level
 	 * @return void
 	 */
-	public static function setDatabaseHandler( LogEntryWriter $writer, $level = 'debug' ): void {
+	public static function setDatabaseHandler( ?LogEntryWriter $writer, $level = 'debug' ): void {
+		$logger = self::getLogger();
+		unset( self::$handlers['db'] );
+		$logger->setHandlers( array_values( self::$handlers ) );
+		if ( $writer === null ) {
+			return;
+		}
 		$handler = new DatabaseHandler( $writer, $level );
 		self::$handlers['db'] = $handler;
-		self::getLogger()->pushHandler( $handler );
+		$logger->pushHandler( $handler );
 	}
 
 	/**
@@ -240,9 +248,12 @@ class Log {
 	}
 
 	/**
+	 * The shared PSR-3 logger with all configured handlers, e.g. for handing to a
+	 * `LoggerAwareInterface` object.
+	 *
 	 * @return Logger
 	 */
-	private static function getLogger(): Logger {
+	public static function getLogger(): Logger {
 		if ( self::$logger === null ) {
 			self::$logger = new Logger( 'migration' );
 			// Verbosity (-v/-vv/-vvv) is filtered by ConsoleLogger, not by the handler level
