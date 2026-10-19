@@ -2,7 +2,12 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration;
 
+use HalloWelt\MediaWiki\Lib\Migration\Logging\Log;
+use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class CliApp extends Application {
 
@@ -16,6 +21,21 @@ class CliApp extends Application {
 		$this->addCommandExtract( $config );
 		$this->addCommandConvert( $config );
 		$this->addCommandCompose( $config );
+	}
+
+	/**
+	 * Routes Log::*() through the running command's output for every command, so that
+	 * -v/-vv/-vvv and --quiet apply even to commands not based on CliCommandBase.
+	 *
+	 * @inheritDoc
+	 */
+	protected function doRunCommand( Command $command, InputInterface $input, OutputInterface $output ): int {
+		Log::setConsoleOutput( $output );
+		Log::setStep( $command->getName() ?? '' );
+		if ( $command instanceof LoggerAwareInterface ) {
+			$command->setLogger( Log::getLogger() );
+		}
+		return parent::doRunCommand( $command, $input, $output );
 	}
 
 	/**

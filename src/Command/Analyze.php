@@ -7,6 +7,7 @@ use HalloWelt\MediaWiki\Lib\Migration\CliCommandBase;
 use HalloWelt\MediaWiki\Lib\Migration\DataBuckets;
 use HalloWelt\MediaWiki\Lib\Migration\IAnalyzer;
 use HalloWelt\MediaWiki\Lib\Migration\IOutputAwareInterface;
+use HalloWelt\MediaWiki\Lib\Migration\Logging\Log;
 
 class Analyze extends CliCommandBase {
 
@@ -39,7 +40,7 @@ class Analyze extends CliCommandBase {
 	}
 
 	protected function doProcessFile(): bool {
-		$this->output->writeln( "Analyzing file '{$this->currentFile->getFilename()}'" );
+		Log::notice( "Analyzing file '{$this->currentFile->getFilename()}'" );
 		$analyzerFactoryCallbacks = $this->config['analyzers'];
 		foreach ( $analyzerFactoryCallbacks as $key => $callback ) {
 			$analyzer = call_user_func_array(
