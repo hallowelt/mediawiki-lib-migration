@@ -5,6 +5,10 @@
     bin/migrate.php convert --src workspace/ --dest=workspace/
     bin/migrate.php compose --src workspace/ --dest=workspace/
 
+# Documentation
+
+- [Logging](doc/logging.md)
+
 # TODO
  - Unit tests for
   - `DataBuckets`
