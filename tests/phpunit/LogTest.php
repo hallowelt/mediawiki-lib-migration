@@ -4,6 +4,9 @@ namespace HalloWelt\MediaWiki\Lib\Migration\Tests;
 
 use HalloWelt\MediaWiki\Lib\Migration\Logging\Log;
 use HalloWelt\MediaWiki\Lib\Migration\Logging\LogEntryWriter;
+use Monolog\Handler\HandlerInterface;
+use Monolog\Handler\StreamHandler;
+use Monolog\Level;
 use PHPUnit\Framework\TestCase;
 
 class LogTest extends TestCase {
@@ -38,22 +41,38 @@ class LogTest extends TestCase {
 	}
 
 	/**
-	 * @covers HalloWelt\MediaWiki\Lib\Migration\Logging\Log::configure
+	 * Strip the default console handler so a test can assert on just the handlers it added
+	 * (e.g. a db writer) without noise from actually writing to the real console.
+	 *
 	 * @return void
 	 */
-	public function testConfigureWritesToFileWithConfiguredLevel(): void {
-		Log::configure( [
-			'handlers' => [
-				'file' => [ 'level' => 'warning', 'path' => $this->logFile ],
-			],
-		] );
+	private function stripConsoleHandler(): void {
+		$logger = Log::getLogger();
+		$ref = new \ReflectionClass( Log::class );
+		$prop = $ref->getProperty( 'handlers' );
+		$handlers = $prop->getValue();
+		unset( $handlers['console'] );
+		$prop->setValue( null, $handlers );
+		$logger->setHandlers( array_values( $handlers ) );
+	}
 
-		Log::info( 'should not appear' );
-		Log::warning( 'should appear' );
-
-		$content = file_get_contents( $this->logFile );
-		$this->assertStringNotContainsString( 'should not appear', $content );
-		$this->assertStringContainsString( 'should appear', $content );
+	/**
+	 * Register an extra handler directly, bypassing the public API, to verify how Log
+	 * routes/processes records once a given handler is present (there is no public API for
+	 * adding arbitrary handlers like a file sink; downstream projects only get console/db).
+	 *
+	 * @param string $name
+	 * @param HandlerInterface $handler
+	 * @return void
+	 */
+	private function addHandler( string $name, HandlerInterface $handler ): void {
+		$logger = Log::getLogger();
+		$ref = new \ReflectionClass( Log::class );
+		$prop = $ref->getProperty( 'handlers' );
+		$handlers = $prop->getValue();
+		$handlers[$name] = $handler;
+		$prop->setValue( null, $handlers );
+		$logger->pushHandler( $handler );
 	}
 
 	/**
@@ -77,7 +96,7 @@ class LogTest extends TestCase {
 			}
 		};
 
-		Log::configure( [ 'handlers' => [] ] );
+		$this->stripConsoleHandler();
 		Log::setStep( 'extract' );
 		Log::setDatabaseHandler( $writer );
 
@@ -116,7 +135,7 @@ class LogTest extends TestCase {
 		$first = $makeWriter();
 		$second = $makeWriter();
 
-		Log::configure( [ 'handlers' => [] ] );
+		$this->stripConsoleHandler();
 		Log::setDatabaseHandler( $first );
 		Log::setDatabaseHandler( $second );
 		Log::info( 'one' );
@@ -130,39 +149,6 @@ class LogTest extends TestCase {
 		Log::to( 'db' )->info( 'four' );
 
 		$this->assertSame( 2, $second->count );
-	}
-
-	/**
-	 * @covers HalloWelt\MediaWiki\Lib\Migration\Logging\Log::configure
-	 * @return void
-	 */
-	public function testConfigureKeepsDatabaseHandlerAcrossReconfigure(): void {
-		$writer = new class implements LogEntryWriter {
-			/** @var array */
-			public $calls = [];
-
-			public function addLogEntry(
-				string $timestamp,
-				string $type,
-				string $step,
-				string $caller,
-				string $text
-			): void {
-				$this->calls[] = [ $timestamp, $type, $step, $caller, $text ];
-			}
-		};
-
-		Log::setDatabaseHandler( $writer );
-		Log::configure( [
-			'handlers' => [
-				'file' => [ 'level' => 'debug', 'path' => $this->logFile ],
-			],
-		] );
-
-		Log::info( 'hello' );
-
-		$this->assertCount( 1, $writer->calls );
-		$this->assertStringContainsString( 'hello', file_get_contents( $this->logFile ) );
 	}
 
 	/**
@@ -194,11 +180,8 @@ class LogTest extends TestCase {
 			}
 		};
 
-		Log::configure( [
-			'handlers' => [
-				'file' => [ 'level' => 'debug', 'path' => $this->logFile ],
-			],
-		] );
+		$this->stripConsoleHandler();
+		$this->addHandler( 'file', new StreamHandler( $this->logFile, Level::Debug ) );
 		Log::setDatabaseHandler( $writer );
 
 		Log::to( 'db' )->error( 'db-only message' );
@@ -212,11 +195,8 @@ class LogTest extends TestCase {
 	 * @return void
 	 */
 	public function testPsr3PlaceholdersAreInterpolatedIntoMessage(): void {
-		Log::configure( [
-			'handlers' => [
-				'file' => [ 'level' => 'debug', 'path' => $this->logFile ],
-			],
-		] );
+		$this->stripConsoleHandler();
+		$this->addHandler( 'file', new StreamHandler( $this->logFile, Level::Debug ) );
 
 		Log::info( 'Processing {path} for user {user}', [ 'path' => '/a/b.txt', 'user' => 'jdoe' ] );
 
@@ -244,11 +224,8 @@ class LogTest extends TestCase {
 			}
 		};
 
-		Log::configure( [
-			'handlers' => [
-				'file' => [ 'level' => 'debug', 'path' => $this->logFile ],
-			],
-		] );
+		$this->stripConsoleHandler();
+		$this->addHandler( 'file', new StreamHandler( $this->logFile, Level::Debug ) );
 		Log::setDatabaseHandler( $writer );
 
 		$exception = new \RuntimeException( 'boom' );
@@ -269,10 +246,8 @@ class LogTest extends TestCase {
 	 * @return void
 	 */
 	public function testSetConsoleOutputRoutesConsoleHandlerThroughGivenOutput(): void {
-		Log::configure( [ 'handlers' => [ 'console' => [ 'level' => 'notice' ] ] ] );
-
 		$output = new \Symfony\Component\Console\Output\BufferedOutput();
-		Log::setConsoleOutput( $output );
+		Log::setConsoleOutput( $output, 'notice' );
 
 		Log::warning( 'routed message' );
 
@@ -284,7 +259,8 @@ class LogTest extends TestCase {
 	 * @return void
 	 */
 	public function testSetConsoleOutputPreservesConfiguredLevelByDefault(): void {
-		Log::configure( [ 'handlers' => [ 'console' => [ 'level' => 'error' ] ] ] );
+		$initialOutput = new \Symfony\Component\Console\Output\BufferedOutput();
+		Log::setConsoleOutput( $initialOutput, 'error' );
 
 		$output = new \Symfony\Component\Console\Output\BufferedOutput();
 		Log::setConsoleOutput( $output );

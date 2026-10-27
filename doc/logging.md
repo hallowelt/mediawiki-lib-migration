@@ -7,11 +7,10 @@ The library provides a single, static logging facade,
 downstream project can call `Log::info( ... )`, `Log::error( ... )` etc.
 directly, without a constructor parameter or a `getLogger()` call.
 
-A single log message can be routed to any combination of three targets at
+A single log message can be routed to any combination of two targets at
 the same time, each with its own independent verbosity:
 
 - **console** (STDOUT/STDERR), via Symfony Console's `ConsoleLogger`
-- **file**, via Monolog's `StreamHandler`
 - **database**, via a `LogEntryWriter` implementation (e.g. `WorkspaceDB`)
 
 ## Quick start
@@ -21,7 +20,7 @@ messages of level `warning` and above are printed to the console (colored iff
 the output is a TTY); `notice`, `info` and `debug` appear with `-v`, `-vv` and
 `-vvv`, see
 [Console visibility per level](#console-visibility-per-level-default-configuration).
-File and database logging are opt-in.
+Database logging is opt-in, see [Database handler](#database-handler) below.
 
 ```php
 use HalloWelt\MediaWiki\Lib\Migration\Logging\Log;
@@ -31,53 +30,11 @@ Log::warning( 'Unexpected markup encountered' );
 Log::error( 'Could not parse title' );
 ```
 
-## Configuration
-
-Call `Log::configure()` **once**, early in your downstream project's
-bootstrap (before any `Log::*()` call you care about), typically after
-reading your own YAML/JSON config file. The configuration format is
-inspired by
-[Django's `LOGGING` setting](https://docs.djangoproject.com/en/6.0/ref/logging/#default-logging-configuration):
-a dict of named `formatters` and a dict of named `handlers`. Every handler
-receives every log record; each handler's own `level` decides whether it
-actually reports the message ("independent verbosity per channel").
-
-```php
-use HalloWelt\MediaWiki\Lib\Migration\Logging\Log;
-
-Log::configure( [
-    'formatters' => [
-        'file' => [
-            'format' => "%datetime% %channel%.%level_name%: %message% %context%\n",
-        ],
-    ],
-    'handlers' => [
-        // Keep the console handler at 'debug' (its default): Symfony's -v/-vv/-vvv
-        // flags do the filtering. A higher level here cuts off info/debug for good.
-        'console' => [ 'level' => 'debug' ],
-        'file' => [
-            'level' => 'debug',
-            'path' => '/var/log/migration/run.log',
-            'formatter' => 'file',
-        ],
-    ],
-] );
-```
-
-A handler entry may also provide a ready-made `HandlerInterface` instance
-directly via the `handler` key, for target types beyond the built-in
-`console`/file (`path`) ones.
-
-Re-calling `Log::configure()` replaces all previously configured handlers
-except the database handler (see below), which is expected to be set up
-once, independently, and to survive reconfiguration.
-
 ### Database handler
 
-The database target is not part of `Log::configure()`'s `handlers` array,
-because it needs a concrete `LogEntryWriter` instance (e.g. your project's
-`WorkspaceDB`, opened against a specific workspace/SQLite file) rather than
-a static config array. Wire it up separately, as early as that instance is
+`Log::setDatabaseHandler()` requires a concrete `LogEntryWriter` instance
+(e.g. your project's `WorkspaceDB`, opened against a specific
+workspace/SQLite file). Wire it up early, as soon as that instance is
 available:
 
 ```php
@@ -155,9 +112,8 @@ targets at once, since a single call reaches every handler:
 | `warning` | shown | - | - | shown | shown | shown |
 | `error`/`critical`/`alert`/`emergency` | shown | - | - | shown | shown | shown |
 
-File and database handlers are unaffected by console verbosity flags; they
-only respect their own configured `level` from `Log::configure()`/
-`Log::setDatabaseHandler()`.
+The database handler is unaffected by console verbosity flags; it only
+respects its own configured `level` from `Log::setDatabaseHandler()`.
 
 ## PSR-3 message interpolation
 
@@ -185,10 +141,11 @@ try {
 
 `Log::to( ...$names )` returns a scoped logger that only reaches the named
 handlers, for the rare cases where a message should not go everywhere.
-Names are the keys used in `configure()`'s `handlers` array, plus the
-built-in `console` and `db`:
+The only built-in names are `console` and `db` (see
+[Database handler](#database-handler)); there is no public API to register
+further named handlers.
 
 ```php
-Log::to( 'file' )->debug( 'verbose parsing detail, keep it out of the console' );
-Log::to( 'db', 'console' )->warning( 'user-visible + audited, but not in the log file' );
+Log::to( 'db' )->debug( 'audit detail, keep it out of the console' );
+Log::to( 'db', 'console' )->warning( 'user-visible + audited' );
 ```

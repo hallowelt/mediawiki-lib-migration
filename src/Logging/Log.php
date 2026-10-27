@@ -2,9 +2,7 @@
 
 namespace HalloWelt\MediaWiki\Lib\Migration\Logging;
 
-use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\HandlerInterface;
-use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\Processor\IntrospectionProcessor;
@@ -17,12 +15,6 @@ use Throwable;
  * Static facade around a single Monolog logger shared by all downstream projects, so that
  * calling code can just do `Log::info( 'message' )` instead of threading a logger instance
  * through constructors / `getLogger()` calls.
- *
- * Configuration is inspired by Django's `LOGGING` dict: a set of named `formatters` and a
- * set of named `handlers`, each with its own level (verbosity) and formatter. All handlers
- * receive the same log record; per-handler `level` decides who stays quiet and who doesn't.
- *
- * @see https://docs.djangoproject.com/en/6.0/ref/logging/#default-logging-configuration
  */
 class Log {
 
@@ -34,52 +26,6 @@ class Log {
 
 	/** @var array<string,HandlerInterface> */
 	private static $handlers = [];
-
-	/**
-	 * Apply a global handler/formatter configuration. Replaces any previously configured
-	 * handlers (a database handler injected via setDatabaseHandler() is kept, since it is
-	 * meant to be set up early and independently, see setDatabaseHandler()).
-	 *
-	 * Example:
-	 * <code>
-	 * Log::configure( [
-	 *     'formatters' => [
-	 *         'default' => [ 'format' => "%datetime% %channel%.%level_name%: %message%\n" ],
-	 *     ],
-	 *     'handlers' => [
-	 *         'console' => [ 'level' => 'notice' ],
-	 *         'file' => [ 'level' => 'debug', 'path' => '/path/to/migration.log', 'formatter' => 'default' ],
-	 *     ],
-	 * ] );
-	 * </code>
-	 *
-	 * A handler entry may also directly provide a ready-made handler via the `handler` key,
-	 * for target types beyond the built-in `console`/file (`path`) ones.
-	 *
-	 * @param array $config
-	 * @return void
-	 */
-	public static function configure( array $config ): void {
-		$logger = self::getLogger();
-		$dbHandler = self::$handlers['db'] ?? null;
-
-		foreach ( $logger->getHandlers() as $handler ) {
-			$logger->popHandler();
-		}
-		unset( $handler );
-		self::$handlers = $dbHandler !== null ? [ 'db' => $dbHandler ] : [];
-
-		$formatters = self::buildFormatters( $config['formatters'] ?? [] );
-		foreach ( $config['handlers'] ?? [] as $name => $handlerConfig ) {
-			$handler = self::buildHandler( $name, $handlerConfig, $formatters );
-			self::$handlers[$name] = $handler;
-			$logger->pushHandler( $handler );
-		}
-
-		if ( $dbHandler !== null ) {
-			$logger->pushHandler( $dbHandler );
-		}
-	}
 
 	/**
 	 * Route the console handler through an already-existing Symfony `OutputInterface`
@@ -104,9 +50,8 @@ class Log {
 	}
 
 	/**
-	 * Inject the DB log sink. Kept separate from configure() because the handler instance
-	 * (e.g. a `WorkspaceDB`) is created by the downstream project, not from a config array,
-	 * and should be wired up early, before/independently of the rest of the configuration.
+	 * Inject the DB log sink. The handler instance (e.g. backed by a `WorkspaceDB`) is
+	 * created by the downstream project and should be wired up early, before logging starts.
 	 *
 	 * Calling it again replaces the previous DB handler; passing null removes it.
 	 *
@@ -230,9 +175,9 @@ class Log {
 
 	/**
 	 * Address a subset of the configured handlers by name for one call, e.g.
-	 * `Log::to( 'file' )->debug( ... )` or `Log::to( 'db', 'console' )->error( ... )`.
-	 * Handler names are the keys used in configure()'s `handlers` array, plus the built-in
-	 * `console` (default handler) and `db` (see setDatabaseHandler()).
+	 * `Log::to( 'db' )->debug( ... )` or `Log::to( 'db', 'console' )->error( ... )`.
+	 * Handler names are the built-in `console` (default handler) and `db`
+	 * (see setDatabaseHandler()).
 	 *
 	 * @param string ...$names
 	 * @return Logger
@@ -271,45 +216,5 @@ class Log {
 			} );
 		}
 		return self::$logger;
-	}
-
-	/**
-	 * @param array $config
-	 * @return array<string,LineFormatter>
-	 */
-	private static function buildFormatters( array $config ): array {
-		$formatters = [];
-		foreach ( $config as $name => $formatterConfig ) {
-			$formatters[$name] = new LineFormatter(
-				$formatterConfig['format'] ?? null,
-				$formatterConfig['date_format'] ?? null
-			);
-		}
-		return $formatters;
-	}
-
-	/**
-	 * @param string $name
-	 * @param array $handlerConfig
-	 * @param array<string,LineFormatter> $formatters
-	 * @return HandlerInterface
-	 */
-	private static function buildHandler( string $name, array $handlerConfig, array $formatters ): HandlerInterface {
-		if ( isset( $handlerConfig['handler'] ) && $handlerConfig['handler'] instanceof HandlerInterface ) {
-			$handler = $handlerConfig['handler'];
-		} elseif ( isset( $handlerConfig['path'] ) ) {
-			$handler = new StreamHandler( $handlerConfig['path'], $handlerConfig['level'] ?? 'debug' );
-		} else {
-			$handler = new ConsoleHandler(
-				$handlerConfig['output'] ?? new ConsoleOutput(),
-				$handlerConfig['level'] ?? 'debug'
-			);
-		}
-
-		if ( isset( $handlerConfig['formatter'] ) && isset( $formatters[$handlerConfig['formatter']] ) ) {
-			$handler->setFormatter( $formatters[$handlerConfig['formatter']] );
-		}
-
-		return $handler;
 	}
 }
